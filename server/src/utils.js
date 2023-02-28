@@ -1,4 +1,4 @@
-import { Client } from 'pg';
+import pg from 'pg';
 import crypto from 'crypto';
 
 const decrypt = (text) => {
@@ -15,7 +15,7 @@ const decrypt = (text) => {
 };
 
 const connectToDatabase = (req, res) => {
-  const db = new Client({
+  const db = new pg.Client({
     user: req.body.user,
     host: req.body.host,
     database: req.body.database,

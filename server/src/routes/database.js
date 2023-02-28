@@ -1,6 +1,6 @@
 import Router from 'express-promise-router';
-import connectToDatabase from '../utils';
-import queries from '../queries';
+import connectToDatabase from '../utils.js';
+import queries from '../queries.js';
 
 const router = new Router();
 
