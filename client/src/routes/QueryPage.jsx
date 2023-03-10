@@ -38,9 +38,6 @@ SideBar.propTypes = {
 };
 
 export const QueryBuilder = (props) => {
-  const showDeleteBtn = () => !(props.activeQueryId === 0 && !props.tables.length)
-    || props.queriesLength > 0;
-
   return (
     <div className="mt-0 pr-2">
       <NavBar language={props.language} />
@@ -56,7 +53,6 @@ export const QueryBuilder = (props) => {
       <QueryTabs />
       <div className="my-2">
         <QueryButton queryValid={props.queryValid} />
-        {showDeleteBtn() && <DeleteQueryButton />}
 
         {props.tables.length ?
         <>
