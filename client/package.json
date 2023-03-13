@@ -30,6 +30,7 @@
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "^5.0.0",
+    "react-select": "^5.7.0",
     "react-table": "^6.10.0",
     "reactstrap": "^7.1.0",
     "redux": "^4.0.1",
@@ -46,7 +47,7 @@
     "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app-rewired"
   },
   "browserslist": [
     ">0.2%",

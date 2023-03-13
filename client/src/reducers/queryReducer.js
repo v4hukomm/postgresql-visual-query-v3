@@ -22,6 +22,7 @@ import {
   UPDATE_COLUMN_OPERAND,
   UPDATE_COLUMNS_ORDER,
   UPDATE_JOIN,
+  UPDATE_JOIN_NEW_TABLE,
   UPDATE_JOINS_ORDER,
   UPDATE_SET,
   UPDATE_SETS_ORDER,
@@ -308,6 +309,50 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         ...state,
         joins,
       };
+    }
+    case UPDATE_JOIN_NEW_TABLE: {
+      const table = _.cloneDeep(action.payload.main_table);
+
+      table.id = state.lastTableId + 1;
+      table.table_alias = '';
+
+      const copies = state.tables
+        .filter(stateTable => _.isEqual(stateTable.table_name, table.table_name)
+          && _.isEqual(stateTable.table_schema, table.table_schema));
+
+      let largestCopy = 0;
+
+      copies.forEach((copy) => {
+        if (_.includes(copy.table_alias, `${table.table_name}_`, 0)) {
+          const numb = copy.table_alias.replace(/[^0-9]/g, '');
+
+          if (parseInt(numb, 0) > largestCopy) {
+            largestCopy = parseInt(numb, 0);
+          }
+        }
+      });
+
+      if (copies.length > 0 && largestCopy === 0) {
+        table.table_alias = `${table.table_name}_1`;
+      }
+
+      if (largestCopy > 0) {
+        const index = largestCopy + 1;
+        table.table_alias = `${table.table_name}_${index}`;
+      }
+
+      const joins = _.cloneDeep(state.joins);
+
+      if (action.payload.id > -1 && action.payload.id < state.joins.length) {
+        joins[action.payload.id] = action.payload;
+      }
+
+      return {
+        ...state,
+        tables: [...state.tables, table],
+        lastTableId: table.id,
+        joins,
+      }
     }
     case REMOVE_JOIN: {
       const filteredJoins = state.joins.filter(join => join.id !== action.payload.id);

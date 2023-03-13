@@ -12,6 +12,7 @@ export const UPDATE_JOINS_ORDER = 'UPDATE_JOINS_ORDER';
 export const ADD_RESULT = 'ADD_RESULT';
 export const ADD_JOIN = 'ADD_JOIN';
 export const UPDATE_JOIN = 'UPDATE_JOIN';
+export const UPDATE_JOIN_NEW_TABLE = 'UPDATE_JOIN_NEW_TABLE';
 export const REMOVE_JOIN = 'REMOVE_JOIN';
 export const REMOVE_COLUMN = 'REMOVE_COLUMN';
 export const DELETE_QUERY = 'DELETE_QUERY';
@@ -95,6 +96,11 @@ export const updateJoin = data => (dispatch) => {
   dispatch({ type: UPDATE_JOIN, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
+
+export const updateJoinNewTable = data => (dispatch) => {
+  dispatch({ type: UPDATE_JOIN_NEW_TABLE, payload: data});
+  dispatch({ type: GENERATE_SQL });
+}
 
 export const removeJoin = data => (dispatch) => {
   dispatch({ type: REMOVE_JOIN, payload: data });
