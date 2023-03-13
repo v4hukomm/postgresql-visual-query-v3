@@ -21,8 +21,8 @@ export const DeleteQueryButton = (props) => {
   };
 
   return (
-    <Button color="danger" className="mr-2" onClick={handleOnClick}>
-      <FontAwesomeIcon icon="trash" />
+    <Button color="danger" className="btn-sm" onClick={handleOnClick} style={{ borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px' }}>
+      <FontAwesomeIcon icon="times" />
     </Button>
   );
 };
