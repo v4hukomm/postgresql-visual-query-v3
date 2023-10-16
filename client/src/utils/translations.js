@@ -27,7 +27,7 @@ export const translations = {
       searchPh: 'Search',
     },
     queryBuilder: {
-      queryB: 'Query',
+      queryB: 'Execute',
       querying: 'Querying',
       queriesH: 'Queries',
       columnsH: 'Columns',

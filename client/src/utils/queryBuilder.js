@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { filter } from 'lodash';
 import * as format from 'pg-format';
 import * as squel from 'squel';
 
@@ -313,14 +314,178 @@ export const buildQuery = (data) => {
     query.distinct();
   }
 
-  if (data.limit && data.limitValue) {
-    query.limit(data.limitValue);
-  }
-
   addColumnsToQuery(data, query);
   addTablesToQuery(data, query);
 
   const setQueryString = buildSetQuery(data);
 
+  if (data.limit && data.limitValue) {
+    return `${query.toString() + setQueryString  + '\n' + 'FETCH FIRST ' + data.limitValue + ' ROWS ' + (data.withTies ? 'WITH TIES;' : 'ONLY;')}`;
+  }
+
   return `${query}${setQueryString};`;
+};
+
+const addFilterToQueryNew = (data, query) => {
+  const columns = _.cloneDeep(data.columns);
+
+  let whereQuery = '';
+  let filterList = [];
+  let filterLength;
+
+  if (columns[0]) {
+    filterLength = columns[0].column_filters.length;
+  };
+
+  columns.forEach((column) => {
+    column.column_filters.forEach((filter) => {
+      if (filter.filter.length > 0) {
+        console.log(column.column_name)
+        filterList.push({id: filter.id, filter: `${column.table_name}.${column.column_name} ${filter.filter}`});
+      }
+    })
+  });
+
+  let finalFilter = [];
+
+  for (let i = 1; i < filterLength + 1; i++) {
+    let filterRow = [];
+    filterList.forEach((filterCell) => {
+      if (filterCell.id === i) {
+        filterRow.push(filterCell.filter);
+      }
+    });
+    if (filterRow.length > 0) {
+      finalFilter.push('(' + filterRow.join(' AND ') + ')');
+    };
+  }
+  whereQuery += finalFilter.join(' OR ');
+  query.where(whereQuery);
+};
+
+const addReturningToQuery = (data, query) => {
+  const columns = _.cloneDeep(data.columns);
+
+  let returning = '';
+  let returningColumns = [];
+
+  columns.forEach((column) => {
+    if (column.returning) {
+      returningColumns.push(`${column.table_name}.${column.column_name}`)
+    }
+  });
+
+  returning += returningColumns.join(', ');
+
+  if (data.returning) {
+    //query.returning('*');
+    return '*';
+  } else {
+    //query.returning(returning);
+    return returning;
+  }
+};
+
+const addInsertValuesToQuery = (data, query) => {
+  const columns = _.cloneDeep(data.columns);
+  let valuesList = [];
+
+  for (let i = 0; i < data.rows; i++) {
+    let valueRow = {};
+
+    columns.forEach((column) => {
+      valueRow[column.column_name] = column.column_values[i].value;
+    });
+
+    query.setFields(valueRow, {dontQuote: true});
+    valuesList.push(query.toString().split('\n').slice(-1).toString().split('VALUES').slice(-1));
+  };
+  return valuesList;
+  //query.setFieldsRows(valuesList);
+};
+
+const addUpdateValuesToQuery = (data, query) => {
+  const columns = _.cloneDeep(data.columns);
+
+  columns.forEach((column) => {
+    if (column.display_in_query) {
+      query.set(column.column_name, column.column_value, {dontQuote: true});
+    };
+  });
+};
+
+export const buildDeleteQuery = (data) => {
+  const query = squelPostgres.delete({
+    useAsForTableAliasNames: true,
+    fieldAliasQuoteCharacter: '',
+    tableAliasQuoteCharacter: '',
+    nameQuoteCharacter: '"',
+    separator: '\n',
+  });
+
+  addFilterToQueryNew(data, query);
+  addTablesToQuery(data, query);
+  query.returning(addReturningToQuery(data, query));
+  return `${query};`;
+};
+
+export const buildInsertQuery = (data) => {
+  const query = squelPostgres.insert({
+    useAsForTableAliasNames: true,
+    fieldAliasQuoteCharacter: '',
+    tableAliasQuoteCharacter: '',
+    nameQuoteCharacter: '"',
+    separator: '\n',
+  });
+
+  query.into(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
+  
+  //addReturningToQuery(data, query);
+
+  let columnString = [];
+    data.columns.forEach((column) => {
+      columnString.push(column.column_name);
+    });
+
+  console.log(columnString);
+  if (data.fromQuery) {
+    query.returning(addReturningToQuery(data, query));
+    return `${query.toString() + ' (' + columnString.join(', ') + ')' + '\n' + data.subquerySql}`;
+  } else {
+    return `${'INSERT\n' + query.toString().split('\n').slice(-1).join('\n') + '\n' + '(' + columnString.join(', ') + ') VALUES' + addInsertValuesToQuery(data, query).join(',') + '\n' + addReturningToQuery(data, query)};`
+  };
+};
+
+export const addFilterUpdate = (data, query) => {
+  const columns = _.cloneDeep(data.columns);
+
+  let whereQuery = '';
+  let filterList = [];
+
+  columns.forEach((column) => {
+    if (column.subquerySql.length > 0) {
+      filterList.push(`${column.table_name}.${column.column_name} = (${column.subquerySql.replaceAll('\n', " ").replace(";", "")})`); 
+    } else if (column.column_filter.length > 0) {
+        filterList.push(`${column.column_filter}`);
+      }
+  });
+
+  query.where(filterList.join(' AND '));
+};
+
+export const buildUpdateQuery = (data) => {
+  const query = squelPostgres.update({
+    useAsForTableAliasNames: true,
+    fieldAliasQuoteCharacter: '',
+    tableAliasQuoteCharacter: '',
+    nameQuoteCharacter: '"',
+    separator: '\n',
+  });
+
+  query.table(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
+  
+  addUpdateValuesToQuery(data, query);
+  addFilterUpdate(data, query);
+  query.returning(addReturningToQuery(data, query));
+  return `${query};`;
 };

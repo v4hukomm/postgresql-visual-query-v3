@@ -7,6 +7,7 @@ import {
   ADD_RESULT,
   ADD_SET,
   ADD_TABLE,
+  CHANGE_QUERY_TYPE,
   DELETE_QUERY,
   GENERATE_SQL,
   QUERYING,
@@ -17,7 +18,11 @@ import {
   SET_ACTIVE_QUERY,
   SET_LIMIT_VALUE,
   SWITCH_DISTINCT,
+  SWITCH_RETURNING,
+  SWITCH_FROM_QUERY,
+  UPDATE_FROM_QUERY,
   SWITCH_LIMIT,
+  SWITCH_TIES,
   UPDATE_COLUMN,
   UPDATE_COLUMN_OPERAND,
   UPDATE_COLUMNS_ORDER,
@@ -28,19 +33,25 @@ import {
   UPDATE_SQL,
   UPDATE_TABLE,
   UPDATE_VALIDITY,
+  ADD_ROWS,
+  REMOVE_ROWS,
 } from '../actions/queryActions';
-import { buildQuery } from '../utils/queryBuilder';
+import { buildQuery, buildDeleteQuery, buildInsertQuery, buildUpdateQuery } from '../utils/queryBuilder';
 
 export const INITIAL_STATE = {
   id: 0,
   columns: [],
+  queryType: 'DELETE',
   tables: [],
   distinct: false,
+  returning: false,
   limit: false,
   limitValue: 50,
+  withTies: false,
   sql: '',
   result: null,
   joins: [],
+  using: [],
   error: null,
   lastColumnId: 0,
   lastTableId: 0,
@@ -48,6 +59,10 @@ export const INITIAL_STATE = {
   queryName: '',
   queryValid: true,
   sets: [],
+  rows: 1,
+  fromQuery: false,
+  subqueryId: 0,
+  subquerySql: '',
 };
 
 export const queryReducer = (state = INITIAL_STATE, action) => {
@@ -68,6 +83,11 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       column.id = state.lastColumnId + 1;
       column.column_alias = '';
       column.column_filter = '';
+      column.column_filters = [
+        { id: 1, filter: '' },
+        { id: 2, filter: '' },
+        { id: 3, filter: '' },
+        { id: 4, filter: '' }];
       column.column_aggregate = '';
       column.column_distinct_on = false;
       column.column_order = false;
@@ -78,6 +98,10 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       column.filter_as_having = false;
       column.subquerySql = '';
       column.subqueryId = 0;
+      column.returning = false;
+      column.column_values = Array.from({ length: state.rows }, (_, index) => ({id: index, value: 'NULL'}));
+      column.column_update_values = { value: 'NULL' };
+      column.column_value = 'NULL';
 
       const copies = state.columns
         .filter(stateColumn => _.isEqual(stateColumn.table_name, column.table_name)
@@ -110,6 +134,47 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         columns: [...state.columns, column],
         lastColumnId: column.id,
       };
+    }
+    case CHANGE_QUERY_TYPE: {
+      return {
+        ...state,
+        queryType: action.payload,
+      }
+    }
+    case ADD_ROWS: {
+      const columns = _.cloneDeep(state.columns);
+      columns.forEach((column) => {
+        column.column_values.push({ id: (state.rows), value: 'NULL' });
+      });
+
+      return {
+        ...state,
+        columns,
+        rows: state.rows + 1
+      }
+    }
+    case REMOVE_ROWS: {
+      if (state.rows > 1) {
+        const columns = _.cloneDeep(state.columns);
+        columns.forEach((column) => {
+          column.column_values.splice(-1);
+        });
+
+        return {
+          ...state,
+          columns,
+          rows: state.rows - 1
+        }
+      };
+    }
+    case UPDATE_FROM_QUERY: {
+      const subQuery = action.payload;
+
+      return {
+        ...state,
+        subqueryId: subQuery.subqueryId,
+        subquerySql: subQuery.subquerySql,
+      }
     }
     case UPDATE_COLUMN: {
       const columns = _.cloneDeep(state.columns);
@@ -259,10 +324,28 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         distinct: !state.distinct,
       };
     }
+    case SWITCH_RETURNING: {
+      return {
+        ...state,
+        returning: !state.returning,
+      };
+    }
+    case SWITCH_FROM_QUERY: {
+      return {
+        ...state,
+        fromQuery: !state.fromQuery,
+      };
+    }
     case SWITCH_LIMIT: {
       return {
         ...state,
         limit: !state.limit,
+      };
+    }
+    case SWITCH_TIES: {
+      return {
+        ...state,
+        withTies: !state.withTies,
       };
     }
     case SET_LIMIT_VALUE: {
@@ -335,12 +418,37 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       return INITIAL_STATE;
     }
     case GENERATE_SQL: {
-      const query = buildQuery(state);
+      if (state.queryType === 'SELECT') {
+        const query = buildQuery(state);
 
-      return {
-        ...state,
-        sql: query,
-      };
+        return {
+          ...state,
+          sql: query,
+        };
+
+      } else if (state.queryType === 'DELETE') {
+        const query = buildDeleteQuery(state);
+
+        return {
+          ...state,
+          sql: query,
+        };
+      
+      } else if (state.queryType === 'INSERT') {
+        const query = buildInsertQuery(state);
+
+        return {
+          ...state,
+          sql: query,
+        };
+      } else if (state.queryType === 'UPDATE') {
+        const query = buildUpdateQuery(state);
+
+        return {
+          ...state,
+          sql: query,
+        };
+      }
     }
     case UPDATE_SQL: {
       return {

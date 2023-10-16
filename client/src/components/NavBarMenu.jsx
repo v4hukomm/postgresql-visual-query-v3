@@ -1,13 +1,13 @@
 import * as PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Row } from 'reactstrap';
+import { Row, CustomInput } from 'reactstrap';
 import _ from 'lodash';
 import { InputWithDeleteButton } from './InputWithDeleteButton';
 import { AddNewButton } from './AddNewButton';
 import { translations } from '../utils/translations';
 import { addQuery } from '../actions/queriesActions';
-import { setActiveQuery } from '../actions/queryActions';
+import { setActiveQuery, changeQueryType } from '../actions/queryActions';
 
 export const NavBarMenu = (props) => {
   const [queryName, setQueryName] = useState('');
@@ -42,6 +42,10 @@ export const NavBarMenu = (props) => {
     props.setActiveQuery(query);
   };
 
+  const handleTypeChange = (e) => {
+    props.changeQueryType(e.target.value);
+  };
+
   return (
     <div className="pl-2 align-self-start m-0 pt-1 pb-2 bg-light">
       {props.activeQuery.id !== 0 && (
@@ -67,6 +71,20 @@ export const NavBarMenu = (props) => {
         <AddNewButton size="sm" id="newQuery" onClick={handleAddQuery} />
         {` ${translations[props.language.code].queryBuilder.queryH}`}
       </div>
+      <div className="col-2 pl-0 pt-3">
+        <CustomInput
+          bsSize="sm"
+          type="select"
+          id="changeQueryType"
+          onChange={handleTypeChange}
+          value={props.activeQuery.queryType}
+        >
+          <option value="SELECT">SELECT</option>
+          <option value="DELETE">DELETE</option>
+          <option value="INSERT">INSERT</option>
+          <option value="UPDATE">UPDATE</option>
+        </CustomInput>
+        </div>
     </div>
   );
 };
@@ -86,6 +104,7 @@ const mapStateToProps = store => ({
 const mapDispatchToProps = {
   addQuery,
   setActiveQuery,
+  changeQueryType,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavBarMenu);

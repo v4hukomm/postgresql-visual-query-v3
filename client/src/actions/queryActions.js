@@ -3,7 +3,13 @@ import axiosClient from '../utils/axiosClient';
 export const ADD_COLUMN = 'ADD_COLUMN';
 export const GENERATE_SQL = 'GENERATE_SQL';
 export const SWITCH_DISTINCT = 'SWITCH_DISTINCT';
+export const SWITCH_RETURNING = 'SWITCH_RETURNING';
+export const SWITCH_FROM_QUERY = 'SWITCH_FROM_QUERY';
+export const UPDATE_FROM_QUERY = 'UPDATE_FROM_QUERY';
 export const ADD_TABLE = 'ADD_TABLE';
+export const ADD_ROWS = 'ADD_ROWS';
+export const REMOVE_ROWS = 'REMOVE_ROWS';
+export const CHANGE_QUERY_TYPE = 'CHANGE_QUERY_TYPE';
 export const REMOVE_TABLE = 'REMOVE_TABLE';
 export const UPDATE_COLUMN = 'UPDATE_COLUMN';
 export const UPDATE_COLUMNS_ORDER = 'UPDATE_COLUMNS_ORDER';
@@ -20,6 +26,7 @@ export const UPDATE_COLUMN_OPERAND = 'UPDATE_COLUMN_OPERAND';
 export const UPDATE_SQL = 'UPDATE_SQL';
 export const SET_ACTIVE_QUERY = 'SET_ACTIVE_QUERY';
 export const SWITCH_LIMIT = 'SWITCH_LIMIT';
+export const SWITCH_TIES = 'SWITCH_TIES';
 export const SET_LIMIT_VALUE = 'SET_LIMIT_VALUE';
 export const ADD_SET = 'ADD_SET';
 export const UPDATE_SET = 'UPDATE_SET';
@@ -32,10 +39,39 @@ export const addColumn = data => (dispatch) => {
   dispatch({ type: GENERATE_SQL });
 };
 
+export const addRows = () => (dispatch) => {
+  dispatch({ type: ADD_ROWS });
+  dispatch({ type: GENERATE_SQL });
+};
+
+export const removeRows = () => (dispatch) => {
+  dispatch({ type: REMOVE_ROWS });
+  dispatch({ type: GENERATE_SQL });
+};
+
 export const switchDistinct = () => (dispatch) => {
   dispatch({ type: SWITCH_DISTINCT });
   dispatch({ type: GENERATE_SQL });
 };
+
+export const switchReturning = () => (dispatch) => {
+  dispatch({ type: SWITCH_RETURNING });
+  dispatch({ type: GENERATE_SQL });
+};
+
+export const switchFromQuery = () => (dispatch) => {
+  dispatch({ type: SWITCH_FROM_QUERY });
+  dispatch({ type: GENERATE_SQL });
+};
+
+export const updateFromQuery = (data) => (dispatch) => {
+  dispatch({ type: UPDATE_FROM_QUERY, payload: data });
+  dispatch({ type: GENERATE_SQL });
+};
+
+export const changeQueryType = data => (dispatch) => {
+  dispatch({ type: CHANGE_QUERY_TYPE, payload: data });
+}
 
 export const addTable = data => (dispatch) => {
   dispatch({ type: ADD_TABLE, payload: data });
@@ -114,6 +150,11 @@ export const setActiveQuery = data => ({ type: SET_ACTIVE_QUERY, payload: data }
 
 export const switchLimit = () => (dispatch) => {
   dispatch({ type: SWITCH_LIMIT });
+  dispatch({ type: GENERATE_SQL });
+};
+
+export const switchTies = () => (dispatch) => {
+  dispatch({ type: SWITCH_TIES });
   dispatch({ type: GENERATE_SQL });
 };
 
