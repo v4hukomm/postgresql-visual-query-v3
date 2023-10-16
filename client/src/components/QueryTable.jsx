@@ -10,62 +10,64 @@ import { translations } from '../utils/translations';
 import QueryTablePopover from './QueryTablePopover';
 import TableColumn from './TableColumn';
 
-const QueryTableHeader = props => (
-  <CardTitle className="d-flex pb-1 mb-0 border-bottom">
-    <div className="px-1 flex-fill d-flex">
-      <Button
-        outline
-        color="info"
-        id={props.target}
-        type="button"
-        className="align-self-center btn-block p-0 px-1 text-left text-truncate"
-      >
-        {props.data.table_alias
-          ? `${props.data.table_name} (${props.data.table_alias})`
-          : `${props.data.table_name}`}
-      </Button>
-      <UncontrolledTooltip
-        placement="top"
-        target={props.target}
-        delay={{ hide: 0 }}
-        className="text-truncate"
-      >
-        {props.data.table_schema}
-      </UncontrolledTooltip>
-    </div>
-    <ButtonGroup>
-      <Button
-        size="sm"
-        color="secondary"
-        className=""
-        style={{ borderTopLeftRadius: '0px' }}
-        onClick={props.handleCopy}
-        id={`${props.target}_copy`}
-      >
-        <FontAwesomeIcon icon="copy" />
-      </Button>
-      <UncontrolledTooltip
-        placement="top"
-        target={`${props.target}_copy`}
-        delay={{ show: 500, hide: 0 }}
-        className="text-truncate"
-      >
-        {translations[props.language.code].tooltips.copyTable}
-      </UncontrolledTooltip>
-      <Button
-        size="sm"
-        className="align-self-start"
-        color="danger"
-        style={{ borderBottomRightRadius: '0px' }}
-        onClick={props.handleRemoveTable}
-        id={`${props.target}_remove`}
-      >
-        <FontAwesomeIcon icon="times" />
-      </Button>
-    </ButtonGroup>
-    <QueryTablePopover target={props.target} data={props.data} />
-  </CardTitle>
-);
+function QueryTableHeader(props) {
+  return (
+    <CardTitle className="d-flex pb-1 mb-0 border-bottom">
+      <div className="px-1 flex-fill d-flex">
+        <Button
+          outline
+          color="info"
+          id={props.target}
+          type="button"
+          className="align-self-center btn-block p-0 px-1 text-left text-truncate"
+        >
+          {props.data.table_alias
+            ? `${props.data.table_name} (${props.data.table_alias})`
+            : `${props.data.table_name}`}
+        </Button>
+        <UncontrolledTooltip
+          placement="top"
+          target={props.target}
+          delay={{ hide: 0 }}
+          className="text-truncate"
+        >
+          {props.data.table_schema}
+        </UncontrolledTooltip>
+      </div>
+      <ButtonGroup>
+        <Button
+          size="sm"
+          color="secondary"
+          className=""
+          style={{ borderTopLeftRadius: '0px' }}
+          onClick={props.handleCopy}
+          id={`${props.target}_copy`}
+        >
+          <FontAwesomeIcon icon="copy" />
+        </Button>
+        <UncontrolledTooltip
+          placement="top"
+          target={`${props.target}_copy`}
+          delay={{ show: 500, hide: 0 }}
+          className="text-truncate"
+        >
+          {translations[props.language.code].tooltips.copyTable}
+        </UncontrolledTooltip>
+        <Button
+          size="sm"
+          className="align-self-start"
+          color="danger"
+          style={{ borderBottomRightRadius: '0px' }}
+          onClick={props.handleRemoveTable}
+          id={`${props.target}_remove`}
+        >
+          <FontAwesomeIcon icon="times" />
+        </Button>
+      </ButtonGroup>
+      <QueryTablePopover target={props.target} data={props.data} />
+    </CardTitle>
+  );
+}
 
 QueryTableHeader.propTypes = {
   data: PropTypes.shape({
@@ -80,19 +82,21 @@ QueryTableHeader.propTypes = {
   handleRemoveTable: PropTypes.func,
 };
 
-const QueryTableBody = props => (
-  <Scrollbars autoHeight autoHeightMax={400}>
-    <CardBody className="py-0 mt-2 px-2 ">
-      {props.data.columns.map(column => (
-        <TableColumn
-          key={`table-column-${_.uniqueId()}`}
-          id={`${props.id}-table-column-${_.uniqueId()}`}
-          data={props.constructData(column)}
-        />
-      ))}
-    </CardBody>
-  </Scrollbars>
-);
+function QueryTableBody(props) {
+  return (
+    <Scrollbars autoHeight autoHeightMax={400}>
+      <CardBody className="py-0 mt-2 px-2 ">
+        {props.data.columns.map((column) => (
+          <TableColumn
+            key={`table-column-${_.uniqueId()}`}
+            id={`${props.id}-table-column-${_.uniqueId()}`}
+            data={props.constructData(column)}
+          />
+        ))}
+      </CardBody>
+    </Scrollbars>
+  );
+}
 
 QueryTableBody.propTypes = {
   data: PropTypes.shape({
@@ -111,14 +115,17 @@ export class QueryTable extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      target: `t_${props.data.table_schema}_${props.data.table_name.replace(' ',
-        '')}_${props.data.id}`,
-    };
-
     this.handleRemoveTable = this.handleRemoveTable.bind(this);
     this.constructData = this.constructData.bind(this);
     this.handleCopy = this.handleCopy.bind(this);
+  }
+
+  handleRemoveTable() {
+    this.props.removeTable(this.props.data);
+  }
+
+  handleCopy() {
+    this.props.addTable(this.props.data);
   }
 
   constructData(column) {
@@ -130,14 +137,6 @@ export class QueryTable extends Component {
     col.table_id = this.props.data.id;
 
     return col;
-  }
-
-  handleRemoveTable() {
-    this.props.removeTable(this.props.data);
-  }
-
-  handleCopy() {
-    this.props.addTable(this.props.data);
   }
 
   render() {
@@ -175,7 +174,7 @@ QueryTable.propTypes = {
   addTable: PropTypes.func,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   language: store.settings.language,
 });
 

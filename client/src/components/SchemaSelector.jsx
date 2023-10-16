@@ -6,7 +6,7 @@ import { changeSelectedSchema } from '../actions/databaseActions';
 import { withToggle } from '../hocs/withToggle';
 import { translations } from '../utils/translations';
 
-export const SchemaSelector = (props) => {
+export function SchemaSelector(props) {
   const handleOnClick = (schema) => {
     props.changeSelectedSchema(schema);
   };
@@ -24,7 +24,7 @@ export const SchemaSelector = (props) => {
           {props.selectedSchema}
         </DropdownToggle>
         <DropdownMenu>
-          {props.schemas.map(schema => (
+          {props.schemas.map((schema) => (
             <DropdownItem
               key={schema}
               onClick={() => handleOnClick(schema)}
@@ -36,7 +36,7 @@ export const SchemaSelector = (props) => {
       </Dropdown>
     </div>
   );
-};
+}
 
 SchemaSelector.propTypes = {
   changeSelectedSchema: PropTypes.func,
@@ -48,7 +48,7 @@ SchemaSelector.propTypes = {
   toggleStatus: PropTypes.bool,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   schemas: store.database.schemas,
   selectedSchema: store.database.selectedSchema,
   language: store.settings.language,

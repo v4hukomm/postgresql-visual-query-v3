@@ -44,7 +44,7 @@ SearchBar.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   language: store.settings.language,
 });
 

@@ -18,26 +18,28 @@ import SearchBar from '../components/SearchBar';
 import DatabaseViewer from '../components/DatabaseViewer';
 import NavBar from '../components/NavBar';
 
-export const SideBar = props => (
-  <div className="d-flex flex-column w-100">
-    <div className="">
-      <LanguageSwitcher />
-      <DisconnectButton />
+export function SideBar(props) {
+  return (
+    <div className="d-flex flex-column w-100">
+      <div className="">
+        <LanguageSwitcher />
+        <DisconnectButton />
+      </div>
+      <SchemaSelector />
+      <SearchBar />
+      <h5 className="mt-2">{translations[props.language.code].sideBar.tablesH}</h5>
+      <div className="d-flex flex-fill">
+        <DatabaseViewer />
+      </div>
     </div>
-    <SchemaSelector />
-    <SearchBar />
-    <h5 className="mt-2">{translations[props.language.code].sideBar.tablesH}</h5>
-    <div className="d-flex flex-fill">
-      <DatabaseViewer />
-    </div>
-  </div>
-);
+  );
+}
 
 SideBar.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
 };
 
-export const QueryBuilder = (props) => {
+export function QueryBuilder(props) {
   const showDeleteBtn = () => !(props.activeQueryId === 0 && !props.tables.length)
     || props.queriesLength > 0;
 
@@ -45,10 +47,10 @@ export const QueryBuilder = (props) => {
     <div className="mt-0 pr-2">
       <NavBar language={props.language} />
       <div style={{ minHeight: '40vh' }}>
-        {props.tables.map((table, index) => (
+        {props.tables.map((table) => (
           <QueryTable
-            key={`query-table-${index}-${table.id}`}
-            id={`query-table-${index}`}
+            key={`query-table-${table.id}`}
+            id={`query-table-${table.id}`}
             data={table}
           />
         ))}
@@ -58,12 +60,13 @@ export const QueryBuilder = (props) => {
         <QueryButton queryValid={props.queryValid} />
         {showDeleteBtn() && <DeleteQueryButton />}
 
-        {props.tables.length ?
-        <>
-          <DownloadSQLButton />
-          <DownloadCSVButton />
-        </> : null
-        }
+        {props.tables.length
+          ? (
+            <>
+              <DownloadSQLButton />
+              <DownloadCSVButton />
+            </>
+          ) : null}
 
       </div>
       {!props.queryValid && (
@@ -74,7 +77,7 @@ export const QueryBuilder = (props) => {
       <ResultTabs />
     </div>
   );
-};
+}
 
 QueryBuilder.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
@@ -84,26 +87,28 @@ QueryBuilder.propTypes = {
   queriesLength: PropTypes.number,
 };
 
-export const QueryPage = props => (
-  <Container fluid>
-    <Row>
-      <Col sm="2" className="py-2 vh-100 d-flex bg-light">
-        <SideBar language={props.language} />
-      </Col>
-      <Col sm="10" className="pr-0">
-        <Scrollbars>
-          <QueryBuilder
-            queryValid={props.queryValid}
-            language={props.language}
-            tables={props.tables}
-            activeQueryId={props.activeQueryId}
-            queriesLength={props.queries.length}
-          />
-        </Scrollbars>
-      </Col>
-    </Row>
-  </Container>
-);
+export function QueryPage(props) {
+  return (
+    <Container fluid>
+      <Row>
+        <Col sm="2" className="py-2 vh-100 d-flex bg-light">
+          <SideBar language={props.language} />
+        </Col>
+        <Col sm="10" className="pr-0">
+          <Scrollbars>
+            <QueryBuilder
+              queryValid={props.queryValid}
+              language={props.language}
+              tables={props.tables}
+              activeQueryId={props.activeQueryId}
+              queriesLength={props.queries.length}
+            />
+          </Scrollbars>
+        </Col>
+      </Row>
+    </Container>
+  );
+}
 
 QueryPage.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
@@ -113,7 +118,7 @@ QueryPage.propTypes = {
   queries: PropTypes.arrayOf(PropTypes.shape({})),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   tables: store.query.tables,
   language: store.settings.language,
   queryValid: store.query.queryValid,

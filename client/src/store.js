@@ -15,8 +15,7 @@ const saveToSessionStorage = (state) => {
     const serializedState = JSON.stringify(state);
 
     sessionStorage.setItem('state', serializedState);
-  }
-  catch (e) {
+  } catch (e) {
     console.log(e);
   }
 };
@@ -29,8 +28,7 @@ const loadFromSessionStorage = () => {
       return undefined;
     }
     return JSON.parse(serializedState);
-  }
-  catch (e) {
+  } catch (e) {
     console.log(e);
 
     return undefined;
@@ -42,8 +40,11 @@ const persistedState = loadFromSessionStorage();
 const store = createStore(
   rootReducer,
   persistedState,
-  compose(applyMiddleware(...middlewares),
-    window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : f => f),
+  compose(
+    applyMiddleware(...middlewares),
+    // eslint-disable-next-line no-underscore-dangle
+    window.__REDUX_DEVTOOLS_EXTENSION__ ? window.__REDUX_DEVTOOLS_EXTENSION__() : (f) => f,
+  ),
 );
 
 store.subscribe(() => saveToSessionStorage(store.getState()));

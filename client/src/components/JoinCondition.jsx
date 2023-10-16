@@ -7,7 +7,7 @@ import * as PropTypes from 'prop-types';
 import { updateJoin } from '../actions/queryActions';
 import { translations } from '../utils/translations';
 
-export const JoinCondition = (props) => {
+export function JoinCondition(props) {
   const handleMainColumnChange = (e) => {
     e.preventDefault();
 
@@ -21,7 +21,7 @@ export const JoinCondition = (props) => {
     };
 
     const conditions = _.cloneDeep(props.join.conditions);
-    const conditionIndex = conditions.findIndex(_condition => _condition.id === value.id);
+    const conditionIndex = conditions.findIndex((_condition) => _condition.id === value.id);
 
     conditions[conditionIndex] = condition;
 
@@ -49,7 +49,7 @@ export const JoinCondition = (props) => {
     };
 
     const conditions = _.cloneDeep(props.join.conditions);
-    const conditionIndex = conditions.findIndex(_condition => _condition.id === value.id);
+    const conditionIndex = conditions.findIndex((_condition) => _condition.id === value.id);
 
     conditions[conditionIndex] = condition;
 
@@ -76,7 +76,7 @@ export const JoinCondition = (props) => {
     };
 
     const conditions = _.cloneDeep(props.join.conditions);
-    const conditionIndex = conditions.findIndex(_condition => _condition.id === value.id);
+    const conditionIndex = conditions.findIndex((_condition) => _condition.id === value.id);
 
     conditions[conditionIndex] = condition;
 
@@ -93,7 +93,7 @@ export const JoinCondition = (props) => {
   const handleRemove = () => {
     let conditions = _.cloneDeep(props.join.conditions);
 
-    conditions = conditions.filter(condition => condition.id !== props.condition.id);
+    conditions = conditions.filter((condition) => condition.id !== props.condition.id);
 
     let join = _.cloneDeep(props.join);
 
@@ -224,14 +224,14 @@ export const JoinCondition = (props) => {
       </div>
     </Row>
   );
-};
+}
 
 JoinCondition.propTypes = {
   id: PropTypes.string,
   language: PropTypes.shape({ code: PropTypes.string }),
   join: PropTypes.shape({
     id: PropTypes.number,
-    conditions: PropTypes.array,
+    conditions: PropTypes.arrayOf,
     main_table: PropTypes.shape({
       table_name: PropTypes.string,
       id: PropTypes.number,
@@ -255,7 +255,7 @@ JoinCondition.propTypes = {
   })),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   tables: store.query.tables,
   language: store.settings.language,
 });

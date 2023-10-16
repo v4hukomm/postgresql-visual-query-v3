@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import * as PropTypes from 'prop-types';
 import { updateColumnOperand } from '../actions/queryActions';
 
-const FilterOperandSelectbox = ({ column }) => {
+function FilterOperandSelectbox({ column }) {
   const dispatch = useDispatch();
   const [filterOperand, setFilterOperand] = useState('AND');
 
@@ -35,7 +35,7 @@ const FilterOperandSelectbox = ({ column }) => {
       </div>
     </Row>
   );
-};
+}
 
 FilterOperandSelectbox.propTypes = {
   column: PropTypes.shape({ id: PropTypes.number }),

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export const withTabSwitcher = WrappedComponent => (props) => {
+export const withTabSwitcher = (WrappedComponent) => function (props) {
   const [activeTab, setActiveTab] = useState('1');
 
   const toggle = (tab) => {

@@ -12,11 +12,15 @@ const addColumnsToQuery = (data, query) => {
 
   const addOrder = (column) => {
     if (_.isEmpty(column.table_alias)) {
-      query.order(`${format.ident(column.table_name)}.${format.ident(column.column_name)}`,
-        column.column_order_dir);
+      query.order(
+        `${format.ident(column.table_name)}.${format.ident(column.column_name)}`,
+        column.column_order_dir,
+      );
     } else {
-      query.order(`${format.ident(column.table_alias)}.${format.ident(column.column_name)}`,
-        column.column_order_dir);
+      query.order(
+        `${format.ident(column.table_alias)}.${format.ident(column.column_name)}`,
+        column.column_order_dir,
+      );
     }
   };
 
@@ -25,8 +29,10 @@ const addColumnsToQuery = (data, query) => {
   };
 
   const addFieldWithAlias = (table, column, alias) => {
-    query.field(`${format.ident(table)}.${format.ident(column)}`,
-      `${format.ident(alias)}`);
+    query.field(
+      `${format.ident(table)}.${format.ident(column)}`,
+      `${format.ident(alias)}`,
+    );
   };
 
   const addGroupBy = (table, column) => {
@@ -199,12 +205,17 @@ const addJoinsToQuery = (data, query) => {
 
   const addJoin = (joinObj, on, joinFn) => {
     if (!_.isEmpty(joinObj.main_table.table_alias)) {
-      joinFn(`${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
-        `${format.ident(joinObj.main_table.table_alias)}`, on);
+      joinFn(
+        `${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
+        `${format.ident(joinObj.main_table.table_alias)}`,
+        on,
+      );
     } else {
-      joinFn(`${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
+      joinFn(
+        `${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
         null,
-        on);
+        on,
+      );
     }
   };
 
@@ -280,8 +291,10 @@ const addTablesToQuery = (data, query) => {
     if (_.isEmpty(table.table_alias)) {
       query.from(`${format.ident(table.table_schema)}.${format.ident(table.table_name)}`);
     } else {
-      query.from(`${format.ident(table.table_schema)}.${format.ident(table.table_name)}`,
-        `${format.ident(table.table_alias)}`);
+      query.from(
+        `${format.ident(table.table_schema)}.${format.ident(table.table_name)}`,
+        `${format.ident(table.table_alias)}`,
+      );
     }
   };
 

@@ -6,7 +6,7 @@ import * as PropTypes from 'prop-types';
 import { disconnect } from '../actions/hostActions';
 import { translations } from '../utils/translations';
 
-export const DisconnectButton = (props) => {
+export function DisconnectButton(props) {
   const handleOnClick = () => {
     props.disconnect();
   };
@@ -20,7 +20,7 @@ export const DisconnectButton = (props) => {
       {translations[props.language.code].sideBar.disconnectB}
     </Button>
   );
-};
+}
 
 DisconnectButton.propTypes = {
   disconnect: PropTypes.func,
@@ -28,7 +28,7 @@ DisconnectButton.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   connected: store.host.connected,
   language: store.settings.language,
 });

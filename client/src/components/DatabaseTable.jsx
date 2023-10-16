@@ -7,7 +7,7 @@ import * as PropTypes from 'prop-types';
 import { addColumn, addTable, removeTable } from '../actions/queryActions';
 import { withToggle } from '../hocs/withToggle';
 
-export const DatabaseTable = ({ data, checked, id, addTableProp, toggle, toggleStatus }) => {
+export function DatabaseTable({ data, checked, id, addTableProp, toggle, toggleStatus }) {
   const handleOnClick = () => {
     addTableProp(data);
   };
@@ -68,7 +68,7 @@ export const DatabaseTable = ({ data, checked, id, addTableProp, toggle, toggleS
       </Tooltip>
     </div>
   );
-};
+}
 
 DatabaseTable.propTypes = {
   data: PropTypes.shape({ table_type: PropTypes.string, table_name: PropTypes.string }),
@@ -81,7 +81,7 @@ DatabaseTable.propTypes = {
 
 const mapDispatchToProps = {
   addColumn,
-  addTableProp: data => addTable(data),
+  addTableProp: (data) => addTable(data),
   removeTable,
 };
 

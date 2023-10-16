@@ -91,7 +91,7 @@ QueryTablePopover.propTypes = {
   target: PropTypes.string,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   language: store.settings.language,
 });
 

@@ -6,11 +6,11 @@ import * as PropTypes from 'prop-types';
 import { setActiveQuery } from '../actions/queryActions';
 import { updateQueries } from '../actions/queriesActions';
 
-export const NavBarQueryTab = (props) => {
+export function NavBarQueryTab(props) {
   const handleClick = (e) => {
     e.preventDefault();
 
-    const lastActiveQuery = props.queries.find(query => query.id === props.activeQuery.id);
+    const lastActiveQuery = props.queries.find((query) => query.id === props.activeQuery.id);
 
     props.setActiveQuery(props.queryTabContent);
     props.updateQueries(lastActiveQuery, props.queryTabContent.id);
@@ -35,7 +35,7 @@ export const NavBarQueryTab = (props) => {
       </Button>
     </div>
   );
-};
+}
 
 NavBarQueryTab.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),

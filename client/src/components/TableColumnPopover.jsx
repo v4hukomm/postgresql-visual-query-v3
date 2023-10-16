@@ -6,7 +6,7 @@ import * as PropTypes from 'prop-types';
 import { withToggle } from '../hocs/withToggle';
 import { translations } from '../utils/translations';
 
-export const TableColumnPopover = (props) => {
+export function TableColumnPopover(props) {
   const modifiers = {
     preventOverflow: {
       enabled: false,
@@ -46,7 +46,7 @@ export const TableColumnPopover = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.foreignKeys.map(fk => (
+              {props.foreignKeys.map((fk) => (
                 <tr
                   key={`${fk.foreign_table_schema}_${fk.foreign_table_name}_${fk.foreign_column_name}`}
                 >
@@ -61,11 +61,11 @@ export const TableColumnPopover = (props) => {
       </PopoverBody>
     </Popover>
   );
-};
+}
 
 TableColumnPopover.propTypes = {
   data: PropTypes.shape({
-    constraints: PropTypes.array,
+    constraints: PropTypes.arrayOf,
     table_id: PropTypes.number,
     column_name: PropTypes.string,
     table_schema: PropTypes.string,
@@ -79,7 +79,7 @@ TableColumnPopover.propTypes = {
   foreignKeys: PropTypes.arrayOf(PropTypes.shape({})),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   language: store.settings.language,
 });
 

@@ -33,7 +33,8 @@ import {
 import * as serviceWorker from './serviceWorker';
 import App from './App';
 
-library.add(faTimes,
+library.add(
+  faTimes,
   faExternalLinkSquareAlt,
   faPlus,
   faTrash,
@@ -55,7 +56,8 @@ library.add(faTimes,
   faProjectDiagram,
   faHome,
   faSortDown,
-  faQuestion);
+  faQuestion,
+);
 
 const rootDocument = document.getElementById('root');
 

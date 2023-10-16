@@ -16,7 +16,7 @@ export const INITIAL_STATE = {
   searchExpr: '',
 };
 
-export const databaseReducer = (state = INITIAL_STATE, action) => {
+export const databaseReducer = (state = INITIAL_STATE, action = {}) => {
   switch (action.type) {
     case ADD_TABLES: {
       const schemas = [];
@@ -30,7 +30,7 @@ export const databaseReducer = (state = INITIAL_STATE, action) => {
       let selectedSchema = schemas[0];
 
       if (schemas.includes('public')) {
-        const index = schemas.findIndex(schema => schema === 'public');
+        const index = schemas.findIndex((schema) => schema === 'public');
         selectedSchema = schemas[index];
       }
 

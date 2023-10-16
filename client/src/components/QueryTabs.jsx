@@ -7,7 +7,7 @@ import JoinList from './JoinList';
 import { translations } from '../utils/translations';
 import SetList from './SetList';
 
-export const QueryTabs = (props) => {
+export function QueryTabs(props) {
   const [activeTab, setActiveTab] = useState('1');
 
   return (
@@ -75,13 +75,13 @@ export const QueryTabs = (props) => {
       </TabContent>
     </div>
   );
-};
+}
 
 QueryTabs.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   language: store.settings.language,
 });
 

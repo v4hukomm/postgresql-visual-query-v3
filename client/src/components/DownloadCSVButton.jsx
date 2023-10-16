@@ -6,7 +6,7 @@ import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as PropTypes from 'prop-types';
 
-export const DownloadCSVButton = (props) => {
+export function DownloadCSVButton(props) {
   const getHeaders = (result) => {
     if (_.isNull(result)) {
       return [];
@@ -48,13 +48,13 @@ export const DownloadCSVButton = (props) => {
       </Button>
     </CSVLink>
   );
-};
+}
 
 DownloadCSVButton.propTypes = {
   result: PropTypes.shape({}),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   result: store.query.result,
 });
 

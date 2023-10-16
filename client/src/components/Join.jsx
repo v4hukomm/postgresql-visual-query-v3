@@ -19,7 +19,7 @@ import { removeJoin, updateJoin } from '../actions/queryActions';
 import JoinCondition from './JoinCondition';
 import { translations } from '../utils/translations';
 
-export const Join = (props) => {
+export function Join(props) {
   const handleTypeChange = (e) => {
     e.preventDefault();
 
@@ -114,7 +114,7 @@ export const Join = (props) => {
         draggableId={props.id}
         index={props.index}
       >
-        {provided => (
+        {(provided) => (
           <Card
             {...provided.draggableProps}
             {...provided.dragHandleProps}
@@ -220,7 +220,7 @@ export const Join = (props) => {
                       && (
                         <Card className="mt-2">
                           <CardBody className="py-0 px-2">
-                            {props.join.conditions.map(condition => (
+                            {props.join.conditions.map((condition) => (
                               <JoinCondition
                                 key={`join-${props.join.id}-condition-${condition.id}-query-${props.queryId}`}
                                 condition={condition}
@@ -252,14 +252,14 @@ export const Join = (props) => {
       </Draggable>
     </div>
   );
-};
+}
 
 Join.propTypes = {
   id: PropTypes.string,
   language: PropTypes.shape({ code: PropTypes.string }),
   join: PropTypes.shape({
     id: PropTypes.number,
-    conditions: PropTypes.array,
+    conditions: PropTypes.arrayOf,
     main_table: PropTypes.shape({ table_name: PropTypes.string }),
     color: PropTypes.string,
     type: PropTypes.string,
@@ -275,7 +275,7 @@ Join.propTypes = {
   queryId: PropTypes.number,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   tables: store.query.tables,
   language: store.settings.language,
 });

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import * as PropTypes from 'prop-types';
 import { translations } from '../utils/translations';
 
-export const InformationPopover = (props) => {
+export function InformationPopover(props) {
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   const toggle = () => setPopoverOpen(!popoverOpen);
@@ -42,13 +42,13 @@ export const InformationPopover = (props) => {
       </Popover>
     </div>
   );
-};
+}
 
 InformationPopover.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   language: store.settings.language,
 });
 

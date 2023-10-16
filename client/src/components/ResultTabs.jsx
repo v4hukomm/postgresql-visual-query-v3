@@ -7,52 +7,54 @@ import { withTabSwitcher } from '../hocs/withTabSwitcher';
 import { translations } from '../utils/translations';
 import ResultSQL from './ResultSQL';
 
-export const ResultTabs = ({ activeTab, toggle, language, result }) => (
-  <div>
-    <Nav tabs>
-      <NavItem>
-        <NavLink
-          className={activeTab === '1' ? 'active' : ''}
-          onClick={() => {
-            toggle('1');
-          }}
-        >
-          SQL
-        </NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink
-          className={activeTab === '2' ? 'active' : ''}
-          onClick={() => {
-            toggle('2');
-          }}
-        >
-          {`${translations[language.code].queryBuilder.resultH}${result ? ` (${result.rowCount || 0})` : ''}`}
-        </NavLink>
-      </NavItem>
-    </Nav>
-    <TabContent activeTab={activeTab}>
-      <TabPane tabId="1">
-        <Container fluid>
-          <Row>
-            <Col sm="12" className="p-1 h-auto">
-              <ResultSQL />
-            </Col>
-          </Row>
-        </Container>
-      </TabPane>
-      <TabPane tabId="2">
-        <Container fluid>
-          <Row>
-            <Col sm="12" className="p-1">
-              <ResultTable />
-            </Col>
-          </Row>
-        </Container>
-      </TabPane>
-    </TabContent>
-  </div>
-);
+export function ResultTabs({ activeTab, toggle, language, result }) {
+  return (
+    <div>
+      <Nav tabs>
+        <NavItem>
+          <NavLink
+            className={activeTab === '1' ? 'active' : ''}
+            onClick={() => {
+              toggle('1');
+            }}
+          >
+            SQL
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={activeTab === '2' ? 'active' : ''}
+            onClick={() => {
+              toggle('2');
+            }}
+          >
+            {`${translations[language.code].queryBuilder.resultH}${result ? ` (${result.rowCount || 0})` : ''}`}
+          </NavLink>
+        </NavItem>
+      </Nav>
+      <TabContent activeTab={activeTab}>
+        <TabPane tabId="1">
+          <Container fluid>
+            <Row>
+              <Col sm="12" className="p-1 h-auto">
+                <ResultSQL />
+              </Col>
+            </Row>
+          </Container>
+        </TabPane>
+        <TabPane tabId="2">
+          <Container fluid>
+            <Row>
+              <Col sm="12" className="p-1">
+                <ResultTable />
+              </Col>
+            </Row>
+          </Container>
+        </TabPane>
+      </TabContent>
+    </div>
+  );
+}
 
 ResultTabs.propTypes = {
   activeTab: PropTypes.string,
@@ -65,7 +67,7 @@ ResultTabs.propTypes = {
   }),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   result: store.query.result,
   language: store.settings.language,
 });

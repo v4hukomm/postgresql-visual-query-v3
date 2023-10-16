@@ -18,7 +18,7 @@ import NavBarMenu from './NavBarMenu';
 import NavBarQueryTabs from './NavBarQueryTabs';
 import { getCorrectQueryName } from '../utils/getCorrectQueryName';
 
-const NavBar = ({ language, queries }) => {
+function NavBar({ language, queries }) {
   const [showNavBarMenu, setShowNavBarMenu] = useState(true);
   const [dropdownOpen, setOpen] = useState(false);
   const [treeElementOpen, setTreeElementOpen] = useState({});
@@ -33,7 +33,7 @@ const NavBar = ({ language, queries }) => {
     const toggleTreeElement = (e) => {
       const id = e.target.getAttribute('id');
 
-      setTreeElementOpen(state => ({ [id]: !state[id] }));
+      setTreeElementOpen((state) => ({ [id]: !state[id] }));
     };
 
     const id = `${query.id}-${parentId || 'top'}`.replace(/[^a-zA-Z0-9-_]/g, '');
@@ -130,7 +130,7 @@ const NavBar = ({ language, queries }) => {
       {showNavBarMenu && <NavBarMenu language={language} />}
     </div>
   );
-};
+}
 
 NavBar.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),

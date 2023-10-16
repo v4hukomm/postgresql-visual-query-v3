@@ -5,7 +5,7 @@ import 'react-table/react-table.css';
 import _ from 'lodash';
 import * as PropTypes from 'prop-types';
 
-export const ResultTable = (props) => {
+export function ResultTable(props) {
   const parseRows = () => {
     const parsedRows = [];
     const rows = _.cloneDeep(props.result.rows);
@@ -34,7 +34,8 @@ export const ResultTable = (props) => {
       maxWidth: 50,
       filterable: false,
       resizable: false,
-      Cell: row => <div>{row.index + 1}</div>,
+      // eslint-disable-next-line react/no-unstable-nested-components
+      Cell: (row) => <div>{row.index + 1}</div>,
     });
 
     props.result.fields.forEach((field) => {
@@ -71,7 +72,7 @@ export const ResultTable = (props) => {
       )}
     </div>
   );
-};
+}
 
 ResultTable.propTypes = {
   result: PropTypes.shape({
@@ -85,7 +86,7 @@ ResultTable.propTypes = {
   }),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   result: store.query.result,
   error: store.query.error,
 });

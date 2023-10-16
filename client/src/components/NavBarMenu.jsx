@@ -9,7 +9,7 @@ import { translations } from '../utils/translations';
 import { addQuery } from '../actions/queriesActions';
 import { setActiveQuery } from '../actions/queryActions';
 
-export const NavBarMenu = (props) => {
+export function NavBarMenu(props) {
   const [queryName, setQueryName] = useState('');
 
   const handleAddQuery = () => {
@@ -45,23 +45,21 @@ export const NavBarMenu = (props) => {
   return (
     <div className="pl-2 align-self-start m-0 pt-1 pb-2 bg-light">
       {props.activeQuery.id !== 0 && (
-        <>
-          <Row form>
-            <div className="col-auto">
-              <InputWithDeleteButton
-                className="pb-2"
-                id="newQueryAlias"
-                name="queryName"
-                placeholder={`${translations[props.language.code].queryBuilder.queryNamePh}`}
-                tooltipTarget="newQueryAlias"
-                tooltipText={` ${translations[props.language.code].tooltips.queryName}`}
-                value={queryName}
-                handleChange={handleChange}
-                handleRemove={handleRemove}
-              />
-            </div>
-          </Row>
-        </>
+        <Row form>
+          <div className="col-auto">
+            <InputWithDeleteButton
+              className="pb-2"
+              id="newQueryAlias"
+              name="queryName"
+              placeholder={`${translations[props.language.code].queryBuilder.queryNamePh}`}
+              tooltipTarget="newQueryAlias"
+              tooltipText={` ${translations[props.language.code].tooltips.queryName}`}
+              value={queryName}
+              handleChange={handleChange}
+              handleRemove={handleRemove}
+            />
+          </div>
+        </Row>
       )}
       <div className="col-12 pl-0 text-info pt-6">
         <AddNewButton size="sm" id="newQuery" onClick={handleAddQuery} />
@@ -69,7 +67,7 @@ export const NavBarMenu = (props) => {
       </div>
     </div>
   );
-};
+}
 
 NavBarMenu.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
@@ -78,7 +76,7 @@ NavBarMenu.propTypes = {
   setActiveQuery: PropTypes.func,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   activeQuery: store.query,
   queries: store.queries,
 });

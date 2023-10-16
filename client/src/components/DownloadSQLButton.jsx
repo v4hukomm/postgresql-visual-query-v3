@@ -4,7 +4,7 @@ import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as PropTypes from 'prop-types';
 
-export const DownloadSQLButton = (props) => {
+export function DownloadSQLButton(props) {
   const downloadContent = (name, content) => {
     if (navigator.msSaveBlob) {
       const blobObject = new Blob([content], { type: 'text/plain' });
@@ -31,13 +31,13 @@ export const DownloadSQLButton = (props) => {
       <div className="d-inline"> SQL</div>
     </Button>
   );
-};
+}
 
 DownloadSQLButton.propTypes = {
   sql: PropTypes.string,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   sql: store.query.sql,
 });
 

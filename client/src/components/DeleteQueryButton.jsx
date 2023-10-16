@@ -6,11 +6,11 @@ import * as PropTypes from 'prop-types';
 import { deleteQuery, setActiveQuery } from '../actions/queryActions';
 import { deleteQueries, removeMainFromQueries } from '../actions/queriesActions';
 
-export const DeleteQueryButton = (props) => {
+export function DeleteQueryButton(props) {
   const handleOnClick = () => {
     props.deleteQuery();
 
-    const mainQuery = props.queries.find(query => query.id === 0);
+    const mainQuery = props.queries.find((query) => query.id === 0);
 
     if (mainQuery) {
       props.removeMainFromQueries();
@@ -25,7 +25,7 @@ export const DeleteQueryButton = (props) => {
       <FontAwesomeIcon icon="trash" />
     </Button>
   );
-};
+}
 
 DeleteQueryButton.propTypes = {
   deleteQuery: PropTypes.func,
@@ -35,7 +35,7 @@ DeleteQueryButton.propTypes = {
   setActiveQuery: PropTypes.func,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   queries: store.queries,
 });
 

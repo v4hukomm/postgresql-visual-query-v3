@@ -1,5 +1,4 @@
-import { DELETE_DATABASE } from './databaseActions';
-
+export const DELETE_DATABASE = 'DELETE_DATABASE';
 export const DELETE_QUERY = 'DELETE_QUERY';
 export const DELETE_QUERIES = 'DELETE_QUERIES';
 export const DELETE_HOST = 'DELETE_HOST';

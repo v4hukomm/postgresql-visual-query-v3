@@ -9,7 +9,7 @@ import { addSet, updateSetsOrder } from '../actions/queryActions';
 import { translations } from '../utils/translations';
 import Set from './Set';
 
-export const SetList = (props) => {
+export function SetList(props) {
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
 
@@ -21,7 +21,7 @@ export const SetList = (props) => {
       return;
     }
 
-    const movedSets = props.sets.find(set => draggableId.localeCompare(`set-${set.id}`) === 0);
+    const movedSets = props.sets.find((set) => draggableId.localeCompare(`set-${set.id}`) === 0);
     const newSets = Array.from(props.sets);
 
     newSets.splice(source.index, 1);
@@ -54,7 +54,7 @@ export const SetList = (props) => {
         onDragEnd={onDragEnd}
       >
         <Droppable droppableId="droppable-columns">
-          {provided => (
+          {(provided) => (
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
@@ -75,7 +75,7 @@ export const SetList = (props) => {
       </DragDropContext>
     </div>
   );
-};
+}
 
 SetList.propTypes = {
   sets: PropTypes.arrayOf(PropTypes.shape({})),
@@ -90,7 +90,7 @@ SetList.propTypes = {
   queryId: PropTypes.number,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   sets: store.query.sets,
   tables: store.query.tables,
   language: store.settings.language,
@@ -98,7 +98,7 @@ const mapStateToProps = store => ({
 });
 
 const mapDispatchToProps = {
-  updateSets: data => updateSetsOrder(data),
+  updateSets: (data) => updateSetsOrder(data),
   addSet,
 };
 

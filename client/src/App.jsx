@@ -6,15 +6,17 @@ import store from './store';
 import LandingPage from './routes/LandingPage';
 import QueryPage from './routes/QueryPage';
 
-const App = () => (
-  <Provider store={store}>
-    <Router history={history}>
-      <div>
-        <Route exact path="/" component={LandingPage} />
-        <Route exact path="/query" component={QueryPage} />
-      </div>
-    </Router>
-  </Provider>
-);
+function App() {
+  return (
+    <Provider store={store}>
+      <Router history={history}>
+        <div>
+          <Route exact path="/" component={LandingPage} />
+          <Route exact path="/query" component={QueryPage} />
+        </div>
+      </Router>
+    </Provider>
+  );
+}
 
 export default App;

@@ -34,11 +34,9 @@ describe('Component: NavBarMenu', () => {
 
     mockStore = configureStore([thunk]);
     store = mockStore(props);
-    component = mount(
-      <Provider store={store}>
-        <NavBarMenu {...props} />
-      </Provider>, { attachTo: div },
-    );
+    component = mount(<Provider store={store}>
+      <NavBarMenu {...props} />
+      </Provider>, { attachTo: div });
   });
 
   it('renders correctly', () => {

@@ -33,13 +33,17 @@ export class TableColumn extends Component {
 
   findForeignKeys() {
     return this.props.data.constraints
-      .filter(constraint => constraint.constraint_type.localeCompare('FOREIGN KEY') === 0);
+      .filter((constraint) => constraint.constraint_type.localeCompare('FOREIGN KEY') === 0);
   }
 
   render() {
-    const btnSelected = this.props.columns.some(column => _.isEqual(column.table_id,
-      this.props.data.table_id) && _.isEqual(column.column_name,
-      this.props.data.column_name)) ? 'success' : 'light';
+    const btnSelected = this.props.columns.some((column) => _.isEqual(
+      column.table_id,
+      this.props.data.table_id,
+    ) && _.isEqual(
+      column.column_name,
+      this.props.data.column_name,
+    )) ? 'success' : 'light';
 
     const modifiers = {
       preventOverflow: {
@@ -59,10 +63,10 @@ export class TableColumn extends Component {
             id={`${this.state.target}-type`}
             onClick={this.handleOnChange}
           >
-            {this.props.data.constraints.some(c => c.constraint_type.localeCompare('PRIMARY KEY') === 0)
+            {this.props.data.constraints.some((c) => c.constraint_type.localeCompare('PRIMARY KEY') === 0)
             && <div className="mr-2 px-2 bg-info text-light rounded-pill">PK</div>}
             <div className="text-truncate d-flex">
-              {!this.props.data.constraints.some(c => c.constraint_type.localeCompare('PRIMARY KEY') === 0)
+              {!this.props.data.constraints.some((c) => c.constraint_type.localeCompare('PRIMARY KEY') === 0)
               && (
                 <span className={`mr-1 px-2 ${btnSelected === 'light' ? 'text-info' : 'text-light'}`}>
                   <FontAwesomeIcon icon={iconPicker(this.props.data.data_type)} />
@@ -72,7 +76,7 @@ export class TableColumn extends Component {
             </div>
             <div className="ml-auto pl-3">
               <div className="bg-light rounded-pill">
-                {this.props.joins.map(join => join.conditions.map(condition => ((_.isEqual(
+                {this.props.joins.map((join) => join.conditions.map((condition) => ((_.isEqual(
                   join.main_table.id,
                   this.props.data.table_id,
                 ) && _.isEqual(condition.main_column, this.props.data.column_name))
@@ -109,8 +113,7 @@ export class TableColumn extends Component {
           )}
         </ButtonGroup>
         {this.state.foreignKeys.length > 0
-        && <TableColumnPopover target={this.state.target} foreignKeys={this.state.foreignKeys} />
-        }
+        && <TableColumnPopover target={this.state.target} foreignKeys={this.state.foreignKeys} />}
       </div>
     );
   }
@@ -121,7 +124,7 @@ TableColumn.propTypes = {
   removeColumn: PropTypes.func,
   addColumn: PropTypes.func,
   data: PropTypes.shape({
-    constraints: PropTypes.array,
+    constraints: PropTypes.arrayOf,
     table_id: PropTypes.number,
     column_name: PropTypes.string,
     table_schema: PropTypes.string,
@@ -134,7 +137,7 @@ TableColumn.propTypes = {
   toggleStatus: PropTypes.bool,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   joins: store.query.joins,
   columns: store.query.columns,
 });

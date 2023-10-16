@@ -9,7 +9,7 @@ import { addJoin, updateJoinsOrder } from '../actions/queryActions';
 import Join from './Join';
 import { translations } from '../utils/translations';
 
-export const JoinList = (props) => {
+export function JoinList(props) {
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
 
@@ -21,7 +21,7 @@ export const JoinList = (props) => {
       return;
     }
 
-    const movedJoins = props.joins.find(join => draggableId.localeCompare(`join-${join.id}`) === 0);
+    const movedJoins = props.joins.find((join) => draggableId.localeCompare(`join-${join.id}`) === 0);
     const newJoins = Array.from(props.joins);
 
     newJoins.splice(source.index, 1);
@@ -54,7 +54,7 @@ export const JoinList = (props) => {
         onDragEnd={onDragEnd}
       >
         <Droppable droppableId="droppable-columns">
-          {provided => (
+          {(provided) => (
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
@@ -75,7 +75,7 @@ export const JoinList = (props) => {
       </DragDropContext>
     </div>
   );
-};
+}
 
 JoinList.propTypes = {
   joins: PropTypes.arrayOf(PropTypes.shape({})),
@@ -90,7 +90,7 @@ JoinList.propTypes = {
   queryId: PropTypes.number,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   joins: store.query.joins,
   tables: store.query.tables,
   language: store.settings.language,
@@ -98,7 +98,7 @@ const mapStateToProps = store => ({
 });
 
 const mapDispatchToProps = {
-  updateJoins: data => updateJoinsOrder(data),
+  updateJoins: (data) => updateJoinsOrder(data),
   addJoin,
 };
 

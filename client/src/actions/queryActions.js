@@ -27,7 +27,7 @@ export const REMOVE_SET = 'REMOVE_SET';
 export const UPDATE_SETS_ORDER = 'UPDATE_SETS_ORDER';
 export const UPDATE_VALIDITY = 'UPDATE_VALIDITY';
 
-export const addColumn = data => (dispatch) => {
+export const addColumn = (data) => (dispatch) => {
   dispatch({ type: ADD_COLUMN, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
@@ -37,17 +37,17 @@ export const switchDistinct = () => (dispatch) => {
   dispatch({ type: GENERATE_SQL });
 };
 
-export const addTable = data => (dispatch) => {
+export const addTable = (data) => (dispatch) => {
   dispatch({ type: ADD_TABLE, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const removeTable = data => (dispatch) => {
+export const removeTable = (data) => (dispatch) => {
   dispatch({ type: REMOVE_TABLE, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const updateColumn = data => (dispatch) => {
+export const updateColumn = (data) => (dispatch) => {
   dispatch({ type: UPDATE_COLUMN, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
@@ -57,22 +57,22 @@ export const updateColumnOperand = (operand, id) => (dispatch) => {
   dispatch({ type: GENERATE_SQL });
 };
 
-export const updateColumnsOrder = data => (dispatch) => {
+export const updateColumnsOrder = (data) => (dispatch) => {
   dispatch({ type: UPDATE_COLUMNS_ORDER, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const updateTable = data => (dispatch) => {
+export const updateTable = (data) => (dispatch) => {
   dispatch({ type: UPDATE_TABLE, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const updateJoinsOrder = data => (dispatch) => {
+export const updateJoinsOrder = (data) => (dispatch) => {
   dispatch({ type: UPDATE_JOINS_ORDER, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const queryAction = state => ({
+export const queryAction = (state) => ({
   type: ADD_RESULT,
   payload: axiosClient.post('/query/query', {
     host: state.host,
@@ -84,59 +84,59 @@ export const queryAction = state => ({
   }),
 });
 
-export const query = state => (dispatch) => {
+export const query = (state) => (dispatch) => {
   dispatch({ type: QUERYING });
   dispatch(queryAction(state));
 };
 
 export const addJoin = () => ({ type: ADD_JOIN });
 
-export const updateJoin = data => (dispatch) => {
+export const updateJoin = (data) => (dispatch) => {
   dispatch({ type: UPDATE_JOIN, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const removeJoin = data => (dispatch) => {
+export const removeJoin = (data) => (dispatch) => {
   dispatch({ type: REMOVE_JOIN, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const removeColumn = data => (dispatch) => {
+export const removeColumn = (data) => (dispatch) => {
   dispatch({ type: REMOVE_COLUMN, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
 export const deleteQuery = () => ({ type: DELETE_QUERY });
 
-export const updateSql = sqlString => ({ type: UPDATE_SQL, payload: { sqlString } });
+export const updateSql = (sqlString) => ({ type: UPDATE_SQL, payload: { sqlString } });
 
-export const setActiveQuery = data => ({ type: SET_ACTIVE_QUERY, payload: data });
+export const setActiveQuery = (data) => ({ type: SET_ACTIVE_QUERY, payload: data });
 
 export const switchLimit = () => (dispatch) => {
   dispatch({ type: SWITCH_LIMIT });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const setLimitValue = limitValue => (dispatch) => {
+export const setLimitValue = (limitValue) => (dispatch) => {
   dispatch({ type: SET_LIMIT_VALUE, payload: { limitValue } });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const updateValidity = isValid => ({ type: UPDATE_VALIDITY, payload: { isValid } });
+export const updateValidity = (isValid) => ({ type: UPDATE_VALIDITY, payload: { isValid } });
 
 export const addSet = () => ({ type: ADD_SET });
 
-export const updateSet = data => (dispatch) => {
+export const updateSet = (data) => (dispatch) => {
   dispatch({ type: UPDATE_SET, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const removeSet = data => (dispatch) => {
+export const removeSet = (data) => (dispatch) => {
   dispatch({ type: REMOVE_SET, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
-export const updateSetsOrder = data => (dispatch) => {
+export const updateSetsOrder = (data) => (dispatch) => {
   dispatch({ type: UPDATE_SETS_ORDER, payload: data });
   dispatch({ type: GENERATE_SQL });
 };

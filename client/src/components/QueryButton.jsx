@@ -6,7 +6,7 @@ import { query, updateValidity } from '../actions/queryActions';
 import { translations } from '../utils/translations';
 import { validateSql } from '../utils/validateQuery';
 
-export const QueryButton = (props) => {
+export function QueryButton(props) {
   const handleOnClick = () => {
     const isValid = validateSql(props.sql);
 
@@ -40,7 +40,7 @@ export const QueryButton = (props) => {
         : translations[props.language.code].queryBuilder.queryB}
     </Button>
   );
-};
+}
 
 QueryButton.propTypes = {
   query: PropTypes.func,
@@ -50,7 +50,7 @@ QueryButton.propTypes = {
   updateValidity: PropTypes.func,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   host: store.host.host,
   port: store.host.port,
   database: store.host.database,

@@ -14,10 +14,10 @@ import QueryColumn from './QueryColumn';
 import FilterOperandSelectbox from './FilterOperandSelectbox';
 import { translations } from '../utils/translations';
 
-export const QueryColumnList = ({
+export function QueryColumnList({
   updateColumns, switchDistinctProp, columns, distinct,
   limit, switchLimitProp, limitValue, setLimitValueProp, language, queryId,
-}) => {
+}) {
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
 
@@ -30,7 +30,7 @@ export const QueryColumnList = ({
     }
 
     const movedColumn = columns
-      .find(column => _.isEqual(draggableId, `query-column-${column.id}`));
+      .find((column) => _.isEqual(draggableId, `query-column-${column.id}`));
     const newColumns = Array.from(columns);
 
     newColumns.splice(source.index, 1);
@@ -72,7 +72,7 @@ export const QueryColumnList = ({
               max={999}
               type="number"
               step="1"
-              onChange={e => setLimitValueProp(e.target.value)}
+              onChange={(e) => setLimitValueProp(e.target.value)}
             />
             <UncontrolledTooltip
               placement="top"
@@ -86,7 +86,7 @@ export const QueryColumnList = ({
       </FormGroup>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable-columns">
-          {provided => (
+          {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
               {columns.map((column, index) => (
                 <React.Fragment key={column.id}>
@@ -98,8 +98,7 @@ export const QueryColumnList = ({
                   />
                   {showFilterOperandSelectbox(column, columns, index)
                     ? (<FilterOperandSelectbox column={column} />)
-                    : null
-                  }
+                    : null}
                 </React.Fragment>
               ))}
               {provided.placeholder}
@@ -109,7 +108,7 @@ export const QueryColumnList = ({
       </DragDropContext>
     </div>
   );
-};
+}
 
 QueryColumnList.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.shape({ column_filter: PropTypes.string })),
@@ -137,12 +136,11 @@ const mapStateToProps = (store) => {
   });
 };
 
-
 const mapDispatchToProps = {
-  updateColumns: data => updateColumnsOrder(data),
+  updateColumns: (data) => updateColumnsOrder(data),
   switchDistinctProp: () => switchDistinct(),
   switchLimitProp: () => switchLimit(),
-  setLimitValueProp: limitValue => setLimitValue(limitValue),
+  setLimitValueProp: (limitValue) => setLimitValue(limitValue),
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(QueryColumnList);

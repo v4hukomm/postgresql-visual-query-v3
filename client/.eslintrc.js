@@ -31,6 +31,7 @@ module.exports = {
       "ExportDeclaration": { "multiline": true, "minProperties": 3 }
     }],
     "prefer-destructuring": ["error", {"object": true, "array": false}],
-    "react/destructuring-assignment": [0, "always", { "ignoreClassFields": false }]
+    "react/destructuring-assignment": [0, "always", { "ignoreClassFields": false }],
+    "react/jsx-props-no-spreading": "off"
   },
 };

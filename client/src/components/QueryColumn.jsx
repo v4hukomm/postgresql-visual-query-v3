@@ -27,22 +27,24 @@ import { translations } from '../utils/translations';
 import { bannedWords } from '../utils/bannedWords';
 import { getCorrectQueryName } from '../utils/getCorrectQueryName';
 
-const CopyButton = ({ id, handleCopy, languageCode }) => (
-  <div>
-    <Button
-      size="sm"
-      color="secondary"
-      id={`${id}_copy`}
-      className="mr-1"
-      onClick={handleCopy}
-    >
-      <FontAwesomeIcon icon="copy" />
-    </Button>
-    <UncontrolledTooltip placement="top" target={`${id}_copy`} delay={{ show: 500, hide: 0 }}>
-      {translations[languageCode].tooltips.copyColumn}
-    </UncontrolledTooltip>
-  </div>
-);
+function CopyButton({ id, handleCopy, languageCode }) {
+  return (
+    <div>
+      <Button
+        size="sm"
+        color="secondary"
+        id={`${id}_copy`}
+        className="mr-1"
+        onClick={handleCopy}
+      >
+        <FontAwesomeIcon icon="copy" />
+      </Button>
+      <UncontrolledTooltip placement="top" target={`${id}_copy`} delay={{ show: 500, hide: 0 }}>
+        {translations[languageCode].tooltips.copyColumn}
+      </UncontrolledTooltip>
+    </div>
+  );
+}
 
 CopyButton.propTypes = {
   id: PropTypes.string,
@@ -50,18 +52,20 @@ CopyButton.propTypes = {
   languageCode: PropTypes.string,
 };
 
-const RemoveButton = ({ id, handleRemoveColumn }) => (
-  <div>
-    <Button
-      size="sm"
-      color="danger"
-      id={`${id}_remove`}
-      onClick={handleRemoveColumn}
-    >
-      <FontAwesomeIcon icon="times" />
-    </Button>
-  </div>
-);
+function RemoveButton({ id, handleRemoveColumn }) {
+  return (
+    <div>
+      <Button
+        size="sm"
+        color="danger"
+        id={`${id}_remove`}
+        onClick={handleRemoveColumn}
+      >
+        <FontAwesomeIcon icon="times" />
+      </Button>
+    </div>
+  );
+}
 
 RemoveButton.propTypes = {
   id: PropTypes.string,
@@ -93,7 +97,7 @@ export class QueryColumn extends Component {
       let column = _.cloneDeep(this.props.data);
 
       const subquerySql = this.props.queries
-        .find(query => query.id === this.props.data.subqueryId).sql;
+        .find((query) => query.id === this.props.data.subqueryId).sql;
 
       column = {
         ...column,
@@ -105,7 +109,7 @@ export class QueryColumn extends Component {
   }
 
   handleDropDown() {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       dropDownOpen: !prevState.dropDownOpen,
     }));
   }
@@ -159,7 +163,7 @@ export class QueryColumn extends Component {
 
     if (e.currentTarget.name === 'subqueryId') {
       const subqueryId = +e.target.value;
-      const subquerySql = this.props.queries.find(query => query.id === subqueryId).sql;
+      const subquerySql = this.props.queries.find((query) => query.id === subqueryId).sql;
 
       column = {
         ...column,
@@ -216,7 +220,7 @@ export class QueryColumn extends Component {
       ? `${this.props.data.table_name}.${this.props.data.column_name}`
       : `${this.props.data.table_alias}.${this.props.data.column_name}`;
     const filterValid = this.state.filter_valid ? '' : 'is-invalid';
-    const linkedQuery = this.props.queries.find(query => query.id === this.props.data.subqueryId);
+    const linkedQuery = this.props.queries.find((query) => query.id === this.props.data.subqueryId);
     const linkedQueryName = linkedQuery
       ? getCorrectQueryName(this.props.language, linkedQuery.queryName, linkedQuery.id)
       : translations[this.props.language.code].queryBuilder.linkSq;
@@ -226,7 +230,7 @@ export class QueryColumn extends Component {
         draggableId={`${this.props.id}`}
         index={this.props.index}
       >
-        {provided => (
+        {(provided) => (
           <div className="m-auto">
             <Card
               className="px-0 my-2"
@@ -444,7 +448,9 @@ export class QueryColumn extends Component {
                                         onClick={this.handleSave}
                                       >
                                         {getCorrectQueryName(
-                                          this.props.language, query.queryName, query.id,
+                                          this.props.language,
+                                          query.queryName,
+                                          query.id,
                                         )}
                                       </DropdownItem>
                                     ))}
@@ -538,10 +544,10 @@ QueryColumn.propTypes = {
   queries: PropTypes.arrayOf(PropTypes.shape({})),
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   distinct: store.query.distinct,
   language: store.settings.language,
-  queries: store.queries.filter(query => query.id !== 0)
+  queries: store.queries.filter((query) => query.id !== 0)
     .sort((query1, query2) => query1.id - query2.id),
 });
 

@@ -19,12 +19,12 @@ import { removeSet, updateSet } from '../actions/queryActions';
 import { translations } from '../utils/translations';
 import { getCorrectQueryName } from '../utils/getCorrectQueryName';
 
-export const Set = (props) => {
+export function Set(props) {
   useEffect(() => {
     if (props.set.subqueryId) {
       let set = _.cloneDeep(props.set);
 
-      const subquery = props.queries.find(query => query.id === props.set.subqueryId);
+      const subquery = props.queries.find((query) => query.id === props.set.subqueryId);
       const subquerySql = subquery ? subquery.sql : '';
 
       set = {
@@ -34,10 +34,9 @@ export const Set = (props) => {
 
       props.updateSet(set);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.set.subqueryId]);
 
-  const selectedQuery = props.queries.find(query => query.id === props.set.subqueryId);
+  const selectedQuery = props.queries.find((query) => query.id === props.set.subqueryId);
   const selectedQueryId = selectedQuery ? selectedQuery.id : 0;
 
   const handleTypeChange = (e) => {
@@ -59,7 +58,7 @@ export const Set = (props) => {
     let set = _.cloneDeep(props.set);
 
     const subqueryId = +e.target.value;
-    const subquerySql = subqueryId ? props.queries.find(query => query.id === subqueryId).sql : '';
+    const subquerySql = subqueryId ? props.queries.find((query) => query.id === subqueryId).sql : '';
 
     set = {
       ...set,
@@ -80,7 +79,7 @@ export const Set = (props) => {
         draggableId={props.id}
         index={props.index}
       >
-        {provided => (
+        {(provided) => (
           <Card
             {...provided.draggableProps}
             {...provided.dragHandleProps}
@@ -149,7 +148,7 @@ export const Set = (props) => {
                                 {translations[props.language.code]
                                   .queryBuilder.setQuery}
                               </option>
-                              {props.queries.map(query => (
+                              {props.queries.map((query) => (
                                 <option
                                   key={`set-${props.id}-query-${query.id}`}
                                   value={query.id}
@@ -183,7 +182,7 @@ export const Set = (props) => {
       </Draggable>
     </div>
   );
-};
+}
 
 Set.propTypes = {
   id: PropTypes.string,
@@ -202,9 +201,9 @@ Set.propTypes = {
   queryId: PropTypes.number,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   language: store.settings.language,
-  queries: store.queries.filter(query => query.id !== 0)
+  queries: store.queries.filter((query) => query.id !== 0)
     .sort((query1, query2) => query1.id - query2.id),
 });
 

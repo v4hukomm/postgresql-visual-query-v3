@@ -1,5 +1,5 @@
-import query from './query';
-import database from './database';
+import query from './query.js';
+import database from './database.js';
 
 export default (app) => {
   app.use('/postgres-query/api/query', query);

@@ -6,7 +6,7 @@ import * as PropTypes from 'prop-types';
 import DatabaseTable from './DatabaseTable';
 import { filterTable } from '../utils/filterTable';
 
-export const DatabaseViewer = (props) => {
+export function DatabaseViewer(props) {
   const constructData = (table) => {
     const data = {
       table_schema: table.table_schema,
@@ -17,17 +17,17 @@ export const DatabaseViewer = (props) => {
 
     let constraints = JSON.parse(JSON.stringify(props.constraints));
 
-    constraints = constraints.filter(constraint => constraint.table_schema === data.table_schema
+    constraints = constraints.filter((constraint) => constraint.table_schema === data.table_schema
       && constraint.table_name === data.table_name);
 
     let columns = JSON.parse(JSON.stringify(props.columns));
 
-    columns = columns.filter(column => column.table_name === data.table_name
+    columns = columns.filter((column) => column.table_name === data.table_name
       && column.table_schema === data.table_schema).map((column) => {
       const col = column;
 
       col.constraints = constraints.filter(
-        constraint => _.includes(constraint.column_name, column.column_name),
+        (constraint) => _.includes(constraint.column_name, column.column_name),
       );
 
       delete col.table_name;
@@ -46,7 +46,7 @@ export const DatabaseViewer = (props) => {
         <div className="mt-1 pr-2">
           {props.tables.map((table, index) => {
             const checked = props.queryTable.some(
-              queryTable => _.isEqual(table.table_name, queryTable.table_name)
+              (queryTable) => _.isEqual(table.table_name, queryTable.table_name)
                 && _.isEqual(table.table_schema, queryTable.table_schema),
             );
 
@@ -67,7 +67,7 @@ export const DatabaseViewer = (props) => {
       </Scrollbars>
     </div>
   );
-};
+}
 
 DatabaseViewer.propTypes = {
   data: PropTypes.shape({ table_type: PropTypes.string, table_name: PropTypes.string }),
@@ -79,7 +79,7 @@ DatabaseViewer.propTypes = {
   searchExpr: PropTypes.string,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   tables: store.database.tables,
   schemas: store.database.schemas,
   selectedSchema: store.database.selectedSchema,

@@ -92,7 +92,7 @@ describe('database reducer', () => {
 
   test('CONNECTED does not switch with multiple executions', () => {
     let state;
-    
+
     state = databaseReducer(INITIAL_STATE, {
       type: 'CONNECTED',
     });

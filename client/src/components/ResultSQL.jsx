@@ -7,40 +7,42 @@ import { UnControlled as CodeMirror } from 'react-codemirror2';
 import * as PropTypes from 'prop-types';
 import { updateSql } from '../actions/queryActions';
 
-export const ResultSQL = ({ sql, updateSqlProp }) => (
-  <div className="col-sm-12 p-0" style={{ height: '30vh' }}>
-    <div className="ml-n1 border" style={{ resize: 'vertical', overflow: 'auto' }}>
-      <CodeMirror
-        className="CodeMirror"
-        value={sql}
-        onChange={(editor, data, value) => {
-          if (data.origin) {
-            updateSqlProp(value);
-          }
-        }}
-        autoCursor={false}
-        options={{
-          mode: 'text/x-pgsql',
-          lineNumbers: true,
-          matchBrackets: true,
-          readOnly: false,
-        }}
-      />
+export function ResultSQL({ sql, updateSqlProp }) {
+  return (
+    <div className="col-sm-12 p-0" style={{ height: '30vh' }}>
+      <div className="ml-n1 border" style={{ resize: 'vertical', overflow: 'auto' }}>
+        <CodeMirror
+          className="CodeMirror"
+          value={sql}
+          onChange={(editor, data, value) => {
+            if (data.origin) {
+              updateSqlProp(value);
+            }
+          }}
+          autoCursor={false}
+          options={{
+            mode: 'text/x-pgsql',
+            lineNumbers: true,
+            matchBrackets: true,
+            readOnly: false,
+          }}
+        />
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 ResultSQL.propTypes = {
   sql: PropTypes.string,
   updateSqlProp: PropTypes.func,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   sql: store.query.sql,
 });
 
 const mapDispatchToProps = {
-  updateSqlProp: sql => updateSql(sql),
+  updateSqlProp: (sql) => updateSql(sql),
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ResultSQL);

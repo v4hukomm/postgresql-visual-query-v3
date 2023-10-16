@@ -6,7 +6,7 @@ import { languages } from '../utils/translations';
 import { changeLanguage } from '../actions/settingsActions';
 import { withToggle } from '../hocs/withToggle';
 
-export const LanguageSwitcher = (props) => {
+export function LanguageSwitcher(props) {
   const handleOnClick = (data) => {
     props.changeLanguage(data);
   };
@@ -17,7 +17,7 @@ export const LanguageSwitcher = (props) => {
         {props.language.name}
       </DropdownToggle>
       <DropdownMenu>
-        {languages.map(language => (
+        {languages.map((language) => (
           <DropdownItem
             key={language.code}
             onClick={() => handleOnClick(language)}
@@ -28,7 +28,7 @@ export const LanguageSwitcher = (props) => {
       </DropdownMenu>
     </Dropdown>
   );
-};
+}
 
 LanguageSwitcher.propTypes = {
   data: PropTypes.shape({ table_type: PropTypes.string, table_name: PropTypes.string }),
@@ -38,7 +38,7 @@ LanguageSwitcher.propTypes = {
   toggleStatus: PropTypes.bool,
 };
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   language: store.settings.language,
 });
 
