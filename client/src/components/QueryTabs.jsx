@@ -5,6 +5,7 @@ import * as PropTypes from 'prop-types';
 import QueryColumnList from './QueryColumnList';
 import JoinList from './JoinList';
 import UsingList from './UsingList';
+import Using from './Using';
 import { translations } from '../utils/translations';
 import SetList from './SetList';
 import NewQueryColumnList from './NewQueryColumnList';

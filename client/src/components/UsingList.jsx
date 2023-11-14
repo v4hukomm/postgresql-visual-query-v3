@@ -5,7 +5,8 @@ import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import * as PropTypes from 'prop-types';
-import { addJoin, updateJoinsOrder } from '../actions/queryActions';
+import { addUsing } from '../actions/queryActions';
+import Using from './Using';
 import Join from './Join';
 import { translations } from '../utils/translations';
 
@@ -30,8 +31,8 @@ export const UsingList = (props) => {
     props.updateJoins(newJoins);
   };
 
-  const handleAddJoin = () => {
-    props.addJoin();
+  const handleAddUsing = () => {
+    props.addUsing();
   };
 
   return (
@@ -42,7 +43,7 @@ export const UsingList = (props) => {
           outline
           color="info"
           size="sm"
-          onClick={handleAddJoin}
+          onClick={handleAddUsing}
           disabled={_.isEmpty(props.tables)}
         >
           <FontAwesomeIcon icon="plus" />
@@ -59,11 +60,11 @@ export const UsingList = (props) => {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              {props.joins.map((join, index) => (
-                <Join
-                  key={`join-${join.id}-query-${props.queryId}`}
-                  id={`join-${join.id}-query-${props.queryId}`}
-                  join={join}
+              {props.using.map((using, index) => (
+                <Using
+                  key={`using-${using.id}-query-${props.queryId}`}
+                  id={`using-${using.id}-query-${props.queryId}`}
+                  using={using}
                   index={index}
                   queryId={props.queryId}
                 />
@@ -91,14 +92,14 @@ UsingList.propTypes = {
 };
 
 const mapStateToProps = store => ({
-  joins: store.query.joins,
+  using: store.query.using,
   tables: store.query.tables,
   language: store.settings.language,
   queryId: store.query.id,
 });
 
 const mapDispatchToProps = {
-
+  addUsing,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UsingList);

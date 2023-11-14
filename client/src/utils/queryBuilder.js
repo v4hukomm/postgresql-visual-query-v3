@@ -449,10 +449,11 @@ export const buildInsertQuery = (data) => {
 
   console.log(columnString);
   if (data.fromQuery) {
-    query.returning(addReturningToQuery(data, query));
-    return `${query.toString() + ' (' + columnString.join(', ') + ')' + '\n' + data.subquerySql}`;
+    //query.returning(addReturningToQuery(data, query));
+    return `${query.toString() + ' (' + columnString.join(', ') + ')' + '\n' + data.subquerySql.slice(0, -1) + '\n' + (addReturningToQuery(data, query).length > 0 ? 'RETURNING ' + addReturningToQuery(data, query) : '')};`;
   } else {
-    return `${'INSERT\n' + query.toString().split('\n').slice(-1).join('\n') + '\n' + '(' + columnString.join(', ') + ') VALUES' + addInsertValuesToQuery(data, query).join(',') + '\n' + addReturningToQuery(data, query)};`
+    return `${'INSERT\n' + query.toString().split('\n').slice(-1).join('\n') + '\n' + '(' + columnString.join(', ') + ') VALUES' + addInsertValuesToQuery(data, query).join(',') + '\n' +
+    (addReturningToQuery(data, query).length > 0 ? 'RETURNING ' + addReturningToQuery(data, query) : '')};`
   };
 };
 
@@ -464,7 +465,8 @@ export const addFilterUpdate = (data, query) => {
 
   columns.forEach((column) => {
     if (column.subquerySql.length > 0) {
-      filterList.push(`${column.table_name}.${column.column_name} = (${column.subquerySql.replaceAll('\n', " ").replace(";", "")})`); 
+      //filterList.push(`${column.table_name}.${column.column_name} = (${column.subquerySql.replaceAll('\n', " ").replace(";", "")})`); 
+      filterList.push(`${column.column_filter}(${column.subquerySql.replaceAll('\n', " ").replace(";", "")})`); 
     } else if (column.column_filter.length > 0) {
         filterList.push(`${column.column_filter}`);
       }

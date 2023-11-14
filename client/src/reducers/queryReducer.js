@@ -36,6 +36,9 @@ import {
   UPDATE_VALIDITY,
   ADD_ROWS,
   REMOVE_ROWS,
+  ADD_USING,
+  UPDATE_USING,
+  REMOVE_USING
 } from '../actions/queryActions';
 import { buildQuery, buildDeleteQuery, buildInsertQuery, buildUpdateQuery } from '../utils/queryBuilder';
 
@@ -353,6 +356,48 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         limitValue: action.payload.limitValue,
+      };
+    }
+    case ADD_USING: {
+      let id = 0;
+
+      if (state.using.length > 0) {
+        id = state.using[state.using.length - 1].id + 1;
+      }
+
+      const using_table = {
+        id,
+        main_table: {
+          table_name: '',
+          table_schema: '',
+          table_alias: '',
+        },
+        conditions: [],
+      };
+
+      return {
+        ...state,
+        using: [...state.using, using_table],
+      };
+    }
+    case UPDATE_USING: {
+      const using = _.cloneDeep(state.using);
+
+      if (action.payload.id > -1 && action.payload.id < state.using.length) {
+        using[action.payload.id] = action.payload;
+      }
+
+      return {
+        ...state,
+        using,
+      };
+    }
+    case REMOVE_USING: {
+      const filteredUsing = state.joins.filter(join => join.id !== action.payload.id);
+
+      return {
+        ...state,
+        using: filteredJoins,
       };
     }
     case ADD_JOIN: {
