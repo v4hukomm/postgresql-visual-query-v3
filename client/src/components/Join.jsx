@@ -11,15 +11,46 @@ import {
   Row,
   UncontrolledTooltip,
 } from 'reactstrap';
+import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import * as PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { removeJoin, updateJoin } from '../actions/queryActions';
+import { removeJoin, updateJoin, updateJoinNewTable } from '../actions/queryActions';
 import JoinCondition from './JoinCondition';
 import { translations } from '../utils/translations';
 
 export const Join = (props) => {
+  const constructOptions = (e) => {
+    let options = [];
+    let newTables = [];
+    let tables = [];
+
+    props.databaseTables.map((table) => {
+      const value = JSON.stringify(table);
+      const option = table.table_name;
+      if (table.table_schema === props.selectedSchema) {
+        newTables.push({ value: value, key: `join-${props.id}-table-${table.table_name}-query-${props.queryId}`, label: option })
+      };
+    });
+
+    props.tables.map((table, index) => {
+      const value = JSON.stringify(table);
+      const option = table.table_alias.length > 0
+        ? `${table.table_name} (${table.table_alias})`
+        : `${table.table_name}`;
+
+      if (index > 0) {
+        tables.push({ value: value, key: `join-${props.id}-table-${table.id}-query-${props.queryId}`, label: option })
+      };
+    });
+
+    options.push({ label: translations[props.language.code].queryBuilder.joinMainTableExisting, options: tables });
+    options.push({ label: translations[props.language.code].queryBuilder.joinMainTableNew, options: newTables });
+
+    return options;
+  };
+
   const handleTypeChange = (e) => {
     e.preventDefault();
 
@@ -34,9 +65,7 @@ export const Join = (props) => {
   };
 
   const handleTableChange = (e) => {
-    e.preventDefault();
-
-    const value = JSON.parse(e.target.value);
+    const value = JSON.parse(e.value);
 
     let join = _.cloneDeep(props.join);
     let conditions = _.cloneDeep(props.join.conditions);
@@ -47,13 +76,26 @@ export const Join = (props) => {
       conditions = [];
     }
 
-    join = {
-      ...join,
-      main_table: value,
-      conditions,
-    };
+    if (value.id > 0) {
+      join = {
+        ...join,
+        main_table: value,
+        conditions,
+      };
 
-    props.updateJoin(join);
+      props.updateJoin(join);
+    } else {
+      const newTable = constructNewTableData(value);
+
+      let newTableWithJoin = {
+        ...join,
+        main_table: newTable,
+        conditions,
+      }
+
+      props.updateJoinNewTable(newTableWithJoin)
+    }
+
   };
 
   const handleAddCondition = () => {
@@ -107,6 +149,39 @@ export const Join = (props) => {
       ? `${props.tables[0].table_schema}.${props.tables[0].table_name}`
       : `${props.tables[0].table_alias}`;
   }
+  
+  const constructNewTableData = (table) => {
+    const data = {
+      table_schema: table.table_schema,
+      table_name: table.table_name,
+      table_type: table.table_type,
+      table_alias: '',
+    };
+
+    let constraints = JSON.parse(JSON.stringify(props.constraints));
+
+    constraints = constraints.filter(constraint => constraint.table_schema === data.table_schema
+      && constraint.table_name === data.table_name);
+
+    let columns = JSON.parse(JSON.stringify(props.columns));
+
+    columns = columns.filter(column => column.table_name === data.table_name
+      && column.table_schema === data.table_schema).map((column) => {
+      const col = column;
+
+      col.constraints = constraints.filter(
+        constraint => _.includes(constraint.column_name, column.column_name),
+      );
+
+      delete col.table_name;
+      delete col.table_schema;
+      return col;
+    });
+
+    data.columns = columns;
+
+    return data;
+  };
 
   return (
     <div className="my-2">
@@ -166,36 +241,11 @@ export const Join = (props) => {
                         </div>
                         <div className="col-5">
                           <FormGroup className="m-0">
-                            <CustomInput
-                              bsSize="sm"
-                              type="select"
+                            <Select
                               id="main_table"
+                              placeholder={translations[props.language.code].queryBuilder.joinMainTable}
                               onChange={handleTableChange}
-                              defaultValue={JSON.stringify(defaultValue)}
-                            >
-                              <option
-                                key={`${props.id}-null-query-${props.queryId}`}
-                                value={JSON.stringify(defaultValue)}
-                              >
-                                {translations[props.language.code]
-                                  .queryBuilder.joinMainTable}
-                              </option>
-                              {props.tables.map((table, index) => {
-                                const value = JSON.stringify(table);
-                                const option = table.table_alias.length > 0
-                                  ? `${table.table_name} (${table.table_alias})`
-                                  : `${table.table_name}`;
-
-                                return index > 0 && (
-                                  <option
-                                    key={`join-${props.id}-table-${table.id}-query-${props.queryId}`}
-                                    value={value}
-                                  >
-                                    {option}
-                                  </option>
-                                );
-                              })}
-                            </CustomInput>
+                              options={constructOptions()}/>
                           </FormGroup>
                         </div>
                       </Row>
@@ -272,10 +322,15 @@ Join.propTypes = {
     table_schema: PropTypes.string,
   })),
   index: PropTypes.number,
-  queryId: PropTypes.number,
+  queryId: PropTypes.number
 };
 
 const mapStateToProps = store => ({
+  databaseTables: store.database.tables,
+  columns: store.database.columns,
+  selectedSchema: store.database.selectedSchema,
+  constraints: store.database.constraints,
+  lastTableId: store.query.lastTableId,
   tables: store.query.tables,
   language: store.settings.language,
 });
@@ -283,6 +338,7 @@ const mapStateToProps = store => ({
 const mapDispatchToProps = {
   updateJoin,
   removeJoin,
+  updateJoinNewTable
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Join);
