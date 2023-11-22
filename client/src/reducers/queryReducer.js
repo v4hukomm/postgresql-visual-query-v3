@@ -270,12 +270,15 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         .filter(column => !_.isEqual(column.table_id, removableTable.id));
       const filteredJoins = state.joins
         .filter(join => !_.isEqual(join.main_table.id, removableTable.id));
+      const filteredUsing = state.using
+        .filter(using => !_.isEqual(using.main_table.id, removableTable.id));
 
       return {
         ...state,
         columns: filteredColumns,
         tables: filteredTables,
         joins: filteredJoins,
+        using: filteredUsing,
       };
     }
     case UPDATE_TABLE: {
@@ -393,11 +396,11 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       };
     }
     case REMOVE_USING: {
-      const filteredUsing = state.joins.filter(join => join.id !== action.payload.id);
+      const filteredUsing = state.using.filter(using => using.id !== action.payload.id);
 
       return {
         ...state,
-        using: filteredJoins,
+        using: filteredUsing,
       };
     }
     case ADD_JOIN: {

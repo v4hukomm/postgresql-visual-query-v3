@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
+    Card,
+    CardBody,
     Form,
     FormGroup,
     Row,
     Button,
 } from 'reactstrap';
 import Select from 'react-select';
+import UsingCondition from './UsingCondition';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { translations } from '../utils/translations';
 import { removeUsing, updateUsing } from '../actions/queryActions';
@@ -42,6 +45,8 @@ export const Using = (props) => {
     return options;
   };
 
+  const isTableSelected = _.isEmpty(props.using.main_table.table_name);
+
   const handleTableChange = (e) => {
     const value = JSON.parse(e.value);
 
@@ -52,7 +57,7 @@ export const Using = (props) => {
       || (!_.isEmpty(props.using.main_table.table_name)
         && !_.isEqual(props.using.main_table.table_name, value.table_name))) {
       conditions = [];
-    }1
+    }
 
     if (value.id > 0) {
       using = {
@@ -65,11 +70,48 @@ export const Using = (props) => {
     }
 
   };
+
+  const handleAddCondition = () => {
+    let id = 0;
+
+    if (props.using.conditions.length > 0) {
+      id = props.using.conditions[props.using.conditions.length - 1].id + 1;
+    }
+
+    const condition = {
+      id,
+      main_column: '',
+      secondary_table: {
+        table_schema: '',
+        table_name: '',
+        table_alias: '',
+      },
+      secondary_column: '',
+    };
+
+    let { using } = props;
+    console.log(using);
+
+    const conditions = _.cloneDeep(props.using.conditions);
+
+    conditions.push(condition);
+
+    using = {
+      ...using,
+      conditions,
+    };
+
+    props.updateUsing(using);
+  };
+
+  const handleRemove = () => {
+    props.removeUsing(props.using);
+  };
     
     return (
         <div>
             <Form className="border border-secondary rounded mt-2 mb-2 p-3">
-                <Row>
+                <Row className="ml-3">
                   USING
                   <div className="col-5">
                           <FormGroup className="m-0">
@@ -80,6 +122,18 @@ export const Using = (props) => {
                               options={constructOptions()}/>
                           </FormGroup>
                         </div>
+                        <div className="col-1 d-flex ml-auto pr-2 justify-content-end">
+                      <FormGroup className="align-self-center m-0">
+                        <Button
+                          size="sm"
+                          color="danger"
+                          onClick={handleRemove}
+                          id={`${props.id}_remove_join-${props.queryId}`}
+                        >
+                          <FontAwesomeIcon icon="times" />
+                        </Button>
+                      </FormGroup>
+                    </div>
                 </Row>
                 <Row>
                         <div className="col-12 text-info">
@@ -89,6 +143,8 @@ export const Using = (props) => {
                             color="info"
                             size="sm"
                             id="addCondition"
+                            disabled={isTableSelected}
+                            onClick={handleAddCondition}
                           >
                             <FontAwesomeIcon icon="plus" />
                           </Button>
@@ -96,6 +152,20 @@ export const Using = (props) => {
                           Add Conditon
                         </div>
                       </Row>
+                      {!_.isEmpty(props.using.conditions)
+                      && (
+                        <Card className="mt-2">
+                          <CardBody className="py-0 px-2">
+                            {props.using.conditions.map(condition => (
+                              <UsingCondition
+                                key={`join-${props.using.id}-condition-${condition.id}-query-${props.queryId}`}
+                                condition={condition}
+                                using={props.using}
+                              />
+                            ))}
+                          </CardBody>
+                        </Card>
+                      )}
             </Form>
         </div>
     );

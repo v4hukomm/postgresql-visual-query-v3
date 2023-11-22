@@ -360,7 +360,33 @@ const addFilterToQueryNew = (data, query) => {
     };
   }
   whereQuery += finalFilter.join(' OR ');
-  query.where(whereQuery);
+  return whereQuery;
+};
+
+const getUsingTables = (data, query) =>  {
+  const usings = _.cloneDeep(data.using);
+
+  let usingTables = [];
+
+  usings.forEach((using) => {
+    usingTables.push(`${using.main_table.table_schema}.${using.main_table.table_name}`);
+  });
+  
+  return usingTables;
+};
+
+const getUsingConditions = (data, query) =>  {
+  const usings = _.cloneDeep(data.using);
+
+  let usingConditions = [];
+
+  usings.forEach((using) => {
+    using.conditions.forEach((condition) => {
+      usingConditions.push(`${condition.secondary_table.table_name}.${condition.secondary_column} = ${using.main_table.table_name}.${condition.main_column}`);
+    });
+  });
+  
+  return usingConditions;
 };
 
 const addReturningToQuery = (data, query) => {
@@ -423,9 +449,19 @@ export const buildDeleteQuery = (data) => {
     separator: '\n',
   });
 
-  addFilterToQueryNew(data, query);
-  addTablesToQuery(data, query);
-  query.returning(addReturningToQuery(data, query));
+  query.from(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
+
+  let usingTables = getUsingTables(data, query);
+  let usingConditions = getUsingConditions(data, query)
+  console.log(addFilterToQueryNew(data, query).length);
+
+  
+  return `${query.toString()
+  + (usingTables.length > 0 ? '\nUSING ' + usingTables.join(', ') + '\n' + 'WHERE' + '(' + usingConditions.join(' AND ') + ')' + ' AND ' + addFilterToQueryNew(data, query)
+  : (addFilterToQueryNew.length > 0 ? '\nWHERE ' + addFilterToQueryNew(data, query) : ''))
+  + '\n' + (addReturningToQuery(data, query).length > 0 ? 'RETURNING ' + addReturningToQuery(data, query) : '')};`
+  //addFilterToQueryNew(data, query);
+  //query.returning(addReturningToQuery(data, query));
   return `${query};`;
 };
 
