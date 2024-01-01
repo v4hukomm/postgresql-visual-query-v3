@@ -49,7 +49,7 @@ export const UsingList = (props) => {
           <FontAwesomeIcon icon="plus" />
         </Button>
         {' '}
-        Add Using
+        {props.queryType === 'DELETE' ? 'Add Using' : 'Add Join' }
       </div>
       <DragDropContext
         onDragEnd={onDragEnd}
@@ -96,6 +96,7 @@ const mapStateToProps = store => ({
   tables: store.query.tables,
   language: store.settings.language,
   queryId: store.query.id,
+  queryType: store.query.queryType,
 });
 
 const mapDispatchToProps = {

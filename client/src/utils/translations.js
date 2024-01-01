@@ -41,7 +41,7 @@ export const translations = {
       aliasPh: 'Alias',
       filterPh: 'Filter (:c is shorthand for the column)',
       conditionH: 'Add condition',
-      queryH: 'Add query',
+      queryH: 'Add statement',
       joinMainTable: 'Select table',
       joinMainTableNew: 'Select new table',
       joinMainTableExisting: 'Select existing table',

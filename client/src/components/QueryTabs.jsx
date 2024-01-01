@@ -5,13 +5,11 @@ import * as PropTypes from 'prop-types';
 import QueryColumnList from './QueryColumnList';
 import JoinList from './JoinList';
 import UsingList from './UsingList';
-import Using from './Using';
 import { translations } from '../utils/translations';
 import SetList from './SetList';
 import NewQueryColumnList from './NewQueryColumnList';
 import InsertQueryColumnList from './InsertQueryColumnList';
-import UpdateQueryColumnList from './UpdateQueryColumnList1';
-import UpdateQueryColumnList1 from './UpdateQueryColumnList';
+import UpdateQueryColumnList from './UpdateQueryColumnList';
 
 
 export const QueryTabs = (props) => {
@@ -100,7 +98,7 @@ export const QueryTabs = (props) => {
             setActiveTab('1');
           }}
         >
-          Columns
+          Set value
         </NavLink>
       </NavItem>
       <NavItem>
@@ -110,7 +108,17 @@ export const QueryTabs = (props) => {
             setActiveTab('2');
           }}
         >
-          Columns2
+          Filter
+        </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink
+          className={activeTab === '3' ? 'active' : ''}
+          onClick={() => {
+            setActiveTab('3');
+          }}
+        >
+          Join
         </NavLink>
       </NavItem>
     </Nav>
@@ -186,7 +194,16 @@ export const QueryTabs = (props) => {
         </TabPane>
         <TabPane tabId="2">
           <Container fluid>
-            <UpdateQueryColumnList1/>
+            <NewQueryColumnList/>
+          </Container>
+        </TabPane>
+        <TabPane tabId="3">
+          <Container fluid>
+            <Row>
+              <Col sm="12" className="p-1">
+                <UsingList/>
+              </Col>
+            </Row>
           </Container>
         </TabPane>
       </TabContent>

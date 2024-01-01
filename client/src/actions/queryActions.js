@@ -37,6 +37,10 @@ export const UPDATE_SET = 'UPDATE_SET';
 export const REMOVE_SET = 'REMOVE_SET';
 export const UPDATE_SETS_ORDER = 'UPDATE_SETS_ORDER';
 export const UPDATE_VALIDITY = 'UPDATE_VALIDITY';
+export const CHANGE_DEFAULT_VALUE = 'CHANGE_DEFAULT_VALUE';
+export const ADD_FILTER_ROW = 'ADD_FILTER_ROW';
+export const REMOVE_FILTER_ROW = 'REMOVE_FILTER_ROW';
+export const UPDATE_COLUMN_FILTER = 'UPDATE_COLUMN_FILTER';
 
 export const addColumn = data => (dispatch) => {
   dispatch({ type: ADD_COLUMN, payload: data });
@@ -50,6 +54,21 @@ export const addRows = () => (dispatch) => {
 
 export const removeRows = () => (dispatch) => {
   dispatch({ type: REMOVE_ROWS });
+  dispatch({ type: GENERATE_SQL });
+};
+
+export const addFilterRow = () => (dispatch) => {
+  dispatch({ type: ADD_FILTER_ROW });
+  dispatch({ type: GENERATE_SQL });
+};
+
+export const removeFilterRow = () => (dispatch) => {
+  dispatch({ type: REMOVE_FILTER_ROW });
+  dispatch({ type: GENERATE_SQL });
+};
+
+export const updateColumnFilter = (data) => (dispatch) => {
+  dispatch({ type: UPDATE_COLUMN_FILTER, payload: data });
   dispatch({ type: GENERATE_SQL });
 };
 
@@ -75,6 +94,11 @@ export const updateFromQuery = (data) => (dispatch) => {
 
 export const changeQueryType = data => (dispatch) => {
   dispatch({ type: CHANGE_QUERY_TYPE, payload: data });
+}
+
+export const changeDefaultValue = data => (dispatch) => {
+  dispatch({ type: CHANGE_DEFAULT_VALUE, payload: data});
+  dispatch({ type: GENERATE_SQL });
 }
 
 export const addTable = data => (dispatch) => {

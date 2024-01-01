@@ -38,14 +38,18 @@ import {
   REMOVE_ROWS,
   ADD_USING,
   UPDATE_USING,
-  REMOVE_USING
+  REMOVE_USING,
+  CHANGE_DEFAULT_VALUE,
+  ADD_FILTER_ROW,
+  REMOVE_FILTER_ROW,
+  UPDATE_COLUMN_FILTER,
 } from '../actions/queryActions';
 import { buildQuery, buildDeleteQuery, buildInsertQuery, buildUpdateQuery } from '../utils/queryBuilder';
 
 export const INITIAL_STATE = {
   id: 0,
   columns: [],
-  queryType: 'DELETE',
+  queryType: 'SELECT',
   tables: [],
   distinct: false,
   returning: false,
@@ -64,9 +68,11 @@ export const INITIAL_STATE = {
   queryValid: true,
   sets: [],
   rows: 1,
+  filterRows: 1,
   fromQuery: false,
   subqueryId: 0,
   subquerySql: '',
+  defaultValue: 'DEFAULT',
 };
 
 export const queryReducer = (state = INITIAL_STATE, action) => {
@@ -87,11 +93,7 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       column.id = state.lastColumnId + 1;
       column.column_alias = '';
       column.column_filter = '';
-      column.column_filters = [
-        { id: 1, filter: '' },
-        { id: 2, filter: '' },
-        { id: 3, filter: '' },
-        { id: 4, filter: '' }];
+      column.column_filters = Array.from({ length: state.filterRows }, (_, index) => ({id: index , filter: ''}));
       column.column_aggregate = '';
       column.column_distinct_on = false;
       column.column_order = false;
@@ -103,7 +105,8 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       column.subquerySql = '';
       column.subqueryId = 0;
       column.returning = false;
-      column.column_values = Array.from({ length: state.rows }, (_, index) => ({id: index, value: 'NULL'}));
+      column.returningOnly = false;
+      column.column_values = Array.from({ length: state.rows }, (_, index) => ({id: index, value: state.defaultValue}));
       column.column_update_values = { value: 'NULL' };
       column.column_value = 'NULL';
 
@@ -145,10 +148,16 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         queryType: action.payload,
       }
     }
+    case CHANGE_DEFAULT_VALUE: {
+      return {
+        ...state,
+        defaultValue: state.defaultValue === 'DEFAULT' ? 'NULL' : 'DEFAULT',
+      }
+    }
     case ADD_ROWS: {
       const columns = _.cloneDeep(state.columns);
       columns.forEach((column) => {
-        column.column_values.push({ id: (state.rows), value: 'NULL' });
+        column.column_values.push({ id: (state.rows), value: 'DEFAULT' });
       });
 
       return {
@@ -170,6 +179,46 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
           rows: state.rows - 1
         }
       };
+    }
+    case ADD_FILTER_ROW: {
+      const columns = _.cloneDeep(state.columns);
+      columns.forEach((column) => {
+        column.column_filters.push({ id: (state.filterRows), filter: '' });
+      });
+
+      return {
+        ...state,
+        columns,
+        filterRows: state.filterRows + 1
+      }
+    }
+    case REMOVE_FILTER_ROW: {
+      if (state.filterRows > 1) {
+        const columns = _.cloneDeep(state.columns);
+        columns.forEach((column) => {
+          column.column_filters.splice(-1);
+        });
+
+        return {
+          ...state,
+          columns,
+          filterRows: state.filterRows - 1
+        }
+      };
+    }
+    case UPDATE_COLUMN_FILTER: {
+      const columns = _.cloneDeep(state.columns);
+      const columnIndex = state.columns.findIndex(column =>- _.isEqual(column.id, action.payload.columnId));
+      const filters = state.columns[columnIndex].column_filters;
+
+      filters[action.payload.filterId].filter = action.payload.filter;
+
+      columns[columnIndex].column_filters = filters;
+
+      return {
+        ...state,
+        columns,
+      }
     }
     case UPDATE_FROM_QUERY: {
       const subQuery = action.payload;

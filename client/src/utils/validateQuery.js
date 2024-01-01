@@ -5,7 +5,6 @@ export const validateSql = (sqlString) => {
   const invalidKeywords = bannedWords.filter(keyword => keyword !== 'select' && lowerCaseSql.includes(
     keyword,
   ));
-  
-  return true;
+
   return !invalidKeywords.length > 0;
 };

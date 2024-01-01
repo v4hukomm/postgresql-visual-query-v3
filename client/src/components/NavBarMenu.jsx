@@ -1,7 +1,7 @@
 import * as PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Row, CustomInput } from 'reactstrap';
+import { Row, Input, Label, Col } from 'reactstrap';
 import _ from 'lodash';
 import { InputWithDeleteButton } from './InputWithDeleteButton';
 import { AddNewButton } from './AddNewButton';
@@ -71,20 +71,29 @@ export const NavBarMenu = (props) => {
         <AddNewButton size="sm" id="newQuery" onClick={handleAddQuery} />
         {` ${translations[props.language.code].queryBuilder.queryH}`}
       </div>
-      <div className="col-2 pl-0 pt-3">
-        <CustomInput
-          bsSize="sm"
-          type="select"
-          id="changeQueryType"
-          onChange={handleTypeChange}
-          value={props.activeQuery.queryType}
-        >
-          <option value="SELECT">SELECT</option>
-          <option value="DELETE">DELETE</option>
-          <option value="INSERT">INSERT</option>
-          <option value="UPDATE">UPDATE</option>
-        </CustomInput>
-        </div>
+      <div className="col-auto pl-0 pt-3">
+        <Row form inline>
+          <Label
+            for="changeQueryType"
+          >
+            Statement type: 
+          </Label>
+          <Col md={1}>
+            <Input
+              bsSize="sm"
+              type="select"
+              id="changeQueryType"
+              onChange={handleTypeChange}
+              value={props.activeQuery.queryType}
+            >
+              <option value="SELECT">SELECT</option>
+              <option value="DELETE">DELETE</option>
+              <option value="INSERT">INSERT</option>
+              <option value="UPDATE">UPDATE</option>
+            </Input>
+          </Col>
+        </Row>
+      </div>
     </div>
   );
 };

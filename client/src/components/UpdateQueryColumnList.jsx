@@ -1,47 +1,53 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Row, Col, CustomInput } from 'reactstrap';
-import UpdateQueryColumn from './UpdateQueryColumn';
-import { switchReturning } from '../actions/queryActions';
+import { Table } from 'reactstrap';
+import RemoveColumnButton from './RemoveColumnButton';
+import SetInput from './SetInput';
 
-export const UpdateQueryColumnList1 = ({columns, returning, switchReturning}) => {
-
+export const UpdateQueryColumnList = ({columns, tables}) => {
     return (
         <div className="mt-2">
-            <Row>
-            <div className="col-sm-1 d-flex">
-                <h3>
-                    Column
-                </h3>
-            </div>
-            <CustomInput
-             className="mr-2"
-             type="switch"
-             id="returning"
-             checked={returning}
-             onChange={switchReturning}
-             label="Returning all">
-            </CustomInput>
-            <Col>
-                SET value
-            </Col>
-            </Row>
-            {columns.map((column) => (
-                <UpdateQueryColumn
-                 key={column.id}
-                 data={column} />
-            ))}
+           {!!columns.length &&
+            <Table style={{width: 'auto'}}>
+                <thead>
+                    <tr>
+                    <th className='border-right'>Column name</th>
+                {columns.map((column) => (
+                    (column.table_id === tables[0].id &&
+                        <th className='border-right'>
+                            {column.table_name}.{column.column_name}
+                            <RemoveColumnButton
+                            column={column}
+                            />
+                        </th>
+                    )
+                ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td className='text-right'>SET</td>
+                    {columns.map((column) => (
+                        (column.table_id === tables[0].id &&
+                            <td>
+                                <SetInput
+                                    column={column}
+                                />
+                            </td>
+                        )
+                    ))}
+                    </tr>
+                </tbody>
+            </Table>
+            }
         </div>
     );
 };
 
 const mapStateToProps = (store) => ({
     columns: store.query.columns,
-    returning: store.query.returning,
+    tables: store.query.tables,
 });
 
-const mapDispatchToProps = {
-    switchReturning,
-}
 
-export default connect(mapStateToProps, mapDispatchToProps)(UpdateQueryColumnList1);
+export default connect(mapStateToProps, null)(UpdateQueryColumnList);

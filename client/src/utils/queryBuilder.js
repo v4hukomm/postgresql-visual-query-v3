@@ -339,7 +339,7 @@ const addFilterToQueryNew = (data, query) => {
 
   columns.forEach((column) => {
     column.column_filters.forEach((filter) => {
-      if (filter.filter.length > 0) {
+      if (filter.filter.length > 0 && !column.returningOnly) {
         console.log(column.column_name)
         filterList.push({id: filter.id, filter: `${column.table_name}.${column.column_name} ${filter.filter}`});
       }
@@ -348,7 +348,7 @@ const addFilterToQueryNew = (data, query) => {
 
   let finalFilter = [];
 
-  for (let i = 1; i < filterLength + 1; i++) {
+  for (let i = 0; i < filterLength + 1; i++) {
     let filterRow = [];
     filterList.forEach((filterCell) => {
       if (filterCell.id === i) {
@@ -396,7 +396,7 @@ const addReturningToQuery = (data, query) => {
   let returningColumns = [];
 
   columns.forEach((column) => {
-    if (column.returning) {
+    if (column.returning || column.returningOnly) {
       returningColumns.push(`${column.table_name}.${column.column_name}`)
     }
   });
@@ -404,10 +404,8 @@ const addReturningToQuery = (data, query) => {
   returning += returningColumns.join(', ');
 
   if (data.returning) {
-    //query.returning('*');
     return '*';
   } else {
-    //query.returning(returning);
     return returning;
   }
 };
@@ -420,21 +418,28 @@ const addInsertValuesToQuery = (data, query) => {
     let valueRow = {};
 
     columns.forEach((column) => {
-      valueRow[column.column_name] = column.column_values[i].value;
+      if (!column.returningOnly) {
+        if (column.column_values[i].value === '') {
+          valueRow[column.column_name] = 'NULL';
+        } else {
+          valueRow[column.column_name] = column.column_values[i].value;
+        }
+      }
     });
 
     query.setFields(valueRow, {dontQuote: true});
     valuesList.push(query.toString().split('\n').slice(-1).toString().split('VALUES').slice(-1));
   };
   return valuesList;
-  //query.setFieldsRows(valuesList);
 };
 
 const addUpdateValuesToQuery = (data, query) => {
   const columns = _.cloneDeep(data.columns);
+  
 
   columns.forEach((column) => {
-    if (column.display_in_query) {
+    if (!column.returningOnly && column.table_id === data.tables[0].id) {
+      console.log(column)
       query.set(column.column_name, column.column_value, {dontQuote: true});
     };
   });
@@ -453,16 +458,11 @@ export const buildDeleteQuery = (data) => {
 
   let usingTables = getUsingTables(data, query);
   let usingConditions = getUsingConditions(data, query)
-  console.log(addFilterToQueryNew(data, query).length);
-
   
   return `${query.toString()
   + (usingTables.length > 0 ? '\nUSING ' + usingTables.join(', ') + '\n' + 'WHERE' + '(' + usingConditions.join(' AND ') + ')' + ' AND ' + addFilterToQueryNew(data, query)
-  : (addFilterToQueryNew.length > 0 ? '\nWHERE ' + addFilterToQueryNew(data, query) : ''))
+  : (addFilterToQueryNew(data, query).length > 0 ? '\nWHERE ' + addFilterToQueryNew(data, query) : ''))
   + '\n' + (addReturningToQuery(data, query).length > 0 ? 'RETURNING ' + addReturningToQuery(data, query) : '')};`
-  //addFilterToQueryNew(data, query);
-  //query.returning(addReturningToQuery(data, query));
-  return `${query};`;
 };
 
 export const buildInsertQuery = (data) => {
@@ -476,19 +476,17 @@ export const buildInsertQuery = (data) => {
 
   query.into(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
   
-  //addReturningToQuery(data, query);
-
   let columnString = [];
     data.columns.forEach((column) => {
-      columnString.push(column.column_name);
+      if (!column.returningOnly) {
+        columnString.push(column.column_name);
+      }
     });
 
-  console.log(columnString);
   if (data.fromQuery) {
-    //query.returning(addReturningToQuery(data, query));
     return `${query.toString() + ' (' + columnString.join(', ') + ')' + '\n' + data.subquerySql.slice(0, -1) + '\n' + (addReturningToQuery(data, query).length > 0 ? 'RETURNING ' + addReturningToQuery(data, query) : '')};`;
   } else {
-    return `${'INSERT\n' + query.toString().split('\n').slice(-1).join('\n') + '\n' + '(' + columnString.join(', ') + ') VALUES' + addInsertValuesToQuery(data, query).join(',') + '\n' +
+    return `${'INSERT\n' + query.toString().split('\n').slice(-1).join('\n') + ' ' + (columnString.length> 0 ? '(' + columnString.join(', ') + ')\nVALUES' + addInsertValuesToQuery(data, query).join(',') + '\n': '') +
     (addReturningToQuery(data, query).length > 0 ? 'RETURNING ' + addReturningToQuery(data, query) : '')};`
   };
 };
@@ -496,19 +494,20 @@ export const buildInsertQuery = (data) => {
 export const addFilterUpdate = (data, query) => {
   const columns = _.cloneDeep(data.columns);
 
-  let whereQuery = '';
   let filterList = [];
 
   columns.forEach((column) => {
     if (column.subquerySql.length > 0) {
-      //filterList.push(`${column.table_name}.${column.column_name} = (${column.subquerySql.replaceAll('\n', " ").replace(";", "")})`); 
       filterList.push(`${column.column_filter}(${column.subquerySql.replaceAll('\n', " ").replace(";", "")})`); 
     } else if (column.column_filter.length > 0) {
         filterList.push(`${column.column_filter}`);
       }
   });
 
-  query.where(filterList.join(' AND '));
+  let usingConditions = getUsingConditions(data, query);
+  console.log(usingConditions);
+
+  query.where('(' + usingConditions.join(' AND ') + ') AND (' + filterList.join(' AND ') + ')');
 };
 
 export const buildUpdateQuery = (data) => {
@@ -523,7 +522,11 @@ export const buildUpdateQuery = (data) => {
   query.table(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
   
   addUpdateValuesToQuery(data, query);
-  addFilterUpdate(data, query);
+  query.where(addFilterToQueryNew(data, query));
   query.returning(addReturningToQuery(data, query));
-  return `${query};`;
+
+  let queryString = query.toString().split('\n');
+  let usingTables = getUsingTables(data, query);
+
+  return queryString.slice(0, 3).join('\n') + (usingTables.length > 0 ? '\n' + 'FROM ' + usingTables.join(', ') : '') + '\n' + queryString.slice(3, queryString.length).join('\n'); 
 };

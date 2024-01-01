@@ -112,7 +112,7 @@ export const Using = (props) => {
         <div>
             <Form className="border border-secondary rounded mt-2 mb-2 p-3">
                 <Row className="ml-3">
-                  USING
+                  {props.queryType === 'DELETE' ? 'USING' : 'FROM' }
                   <div className="col-5">
                           <FormGroup className="m-0">
                             <Select
@@ -179,6 +179,7 @@ const mapStateToProps = (store) => ({
   lastTableId: store.query.lastTableId,
   tables: store.query.tables,
   language: store.settings.language,
+  queryType: store.query.queryType,
 });
 
 const mapDispatchToProps = {

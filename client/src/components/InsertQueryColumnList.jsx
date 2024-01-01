@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import { Button, ButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu, CustomInput, Form, Label } from 'reactstrap';
-import InsertQueryColumn from './InsertQueryColumn';
-import { addRows, removeRows, switchFromQuery, updateFromQuery, switchReturning } from '../actions/queryActions';
+import { Button, ButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu, CustomInput, Form, Label, Table } from 'reactstrap';
+import RemoveColumnButton from './RemoveColumnButton';
+import FilterSwitch from './FilterSwitch';
+import ValueInput from './ValueInput';
+import { addRows, removeRows, switchFromQuery, updateFromQuery, switchReturning, changeDefaultValue } from '../actions/queryActions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getCorrectQueryName } from '../utils/getCorrectQueryName';
 
-export const InsertQueryColumnList = ({columns, addRows, removeRows, queries, switchFromQuery, fromQuery, updateFromQuery, switchReturning, returning}) => {
+export const InsertQueryColumnList = ({columns, addRows, removeRows, queries, switchFromQuery, fromQuery, updateFromQuery, switchReturning, returning, language, defaultValue, changeDefaultValue}) => {
 
     const [dropDownOpen, setDropDownOpen] = useState(false);
 
@@ -49,20 +52,30 @@ export const InsertQueryColumnList = ({columns, addRows, removeRows, queries, sw
             outline
             color="info"
             size="sm"
+            disabled={fromQuery}
             onClick={handleAddRow}
             >
             <FontAwesomeIcon icon="plus" />
             </Button>
-            <Label className="ml-2">Remove row</Label>
+            <Label className="ml-2">Remove last row</Label>
             <Button
             className="mb-1 ml-2"
             outline
             color="info"
             size="sm"
+            disabled={fromQuery}
             onClick={handleRemoveRow}
             >
             <FontAwesomeIcon icon="times" />
             </Button>
+            <CustomInput inline
+             className="mr-2 ml-2"
+             type="switch"
+             id="defaultValue"
+             checked={defaultValue !== 'DEFAULT'}
+             onChange={changeDefaultValue}
+             label="Change DEFAULT to NULL">
+            </CustomInput>
             <CustomInput inline
              className="mr-2 ml-2"
              type="switch"
@@ -107,19 +120,70 @@ export const InsertQueryColumnList = ({columns, addRows, removeRows, queries, sw
                         value={query.id}
                         onClick={handleSave}
                         >
-                        {query.queryName}
+                        {getCorrectQueryName(
+                        language, query.queryName, query.id,
+                        )}
                         </DropdownItem>
                     ))}
                     </DropdownMenu>
                 </ButtonDropdown>
                 }
-            <Form inline className="mt-2 mb-2 p-3">
-            {columns.map((column) => (
-                <InsertQueryColumn
-                 key={column.id}
-                 data={column} />
-            ))}
-            </Form>
+            {!!columns.length &&
+            <Table style={{width: 'auto'}}>
+                <thead>
+                    <tr>
+                    <th className='border-right'>Column name</th>
+                {columns.map((column) => (
+                    <th className='border-right'>
+                        {column.table_name}.{column.column_name}
+                        <RemoveColumnButton
+                            column={column}
+                        />
+                    </th>
+                ))}
+                    </tr>
+                    <tr>
+                        <th className='border-right'>Returning</th>
+                        {columns.map((column) =>
+                            <td className='border-right'>
+                                <FilterSwitch
+                                    column={column}
+                                    only={false}
+                                />
+                            </td>
+                        )}
+                    </tr>
+                    <tr>
+                        <th className='border-right'>Returning only</th>
+                        {columns.map((column) =>
+                            <td className='border-right'>
+                                <FilterSwitch
+                                    column={column}
+                                    only={true}
+                                />
+                            </td>
+                        )}
+                    </tr>
+                </thead>
+                <tbody>
+                    {!fromQuery && columns[0].column_values.map((_, index) => (
+                        <tr>
+                            <td className='text-right'>{index === 0 ? 'VALUES' : ''}</td>
+                        {columns.map((column) => (
+                            <td>
+                                <ValueInput
+                                    column={column}
+                                    index={index}
+                                    fromQuery={fromQuery}
+                                    returningOnly={column.returningOnly}
+                                />
+                            </td>
+                        ))}
+                        </tr>
+                    ))}          
+                </tbody>
+            </Table>
+            }
         </div>
     );
 };
@@ -130,6 +194,8 @@ const mapStateToProps = (store) => ({
     queries: store.queries,
     fromQuery: store.query.fromQuery,
     returning: store.query.returning,
+    language: store.settings.language,
+    defaultValue: store.query.defaultValue,
 });
 
 const mapDispatchToProps = {
@@ -138,6 +204,7 @@ const mapDispatchToProps = {
     switchFromQuery,
     updateFromQuery,
     switchReturning,
+    changeDefaultValue,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(InsertQueryColumnList);

@@ -82,7 +82,7 @@ QueryTableHeader.propTypes = {
 
 const QueryTableBody = props => (
   <Scrollbars autoHeight autoHeightMax={400}>
-    <CardBody className="py-0 mt-2 px-2 ">
+    <CardBody className="py-0 mt-2 px-2">
       {props.data.columns.map(column => (
         <TableColumn
           key={`table-column-${_.uniqueId()}`}

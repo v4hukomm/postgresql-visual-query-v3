@@ -69,9 +69,11 @@ import { getCorrectQueryName } from '../utils/getCorrectQueryName';
     componentDidMount() {
       if (this.props.data.subqueryId) {
         let column = _.cloneDeep(this.props.data);
-  
-        const subquerySql = this.props.queries
-          .find(query => query.id === this.props.data.subqueryId).sql;
+        
+        const subquery = this.props.queries
+          .find(query => query.id === this.props.data.subqueryId);
+
+        const subquerySql = (!typeof subquery === 'undefined' ? subquery.sql : '');
   
         column = {
           ...column,
@@ -216,11 +218,6 @@ import { getCorrectQueryName } from '../utils/getCorrectQueryName';
                                 checked={this.props.data.display_in_query}
                                 onChange={this.handleSwitch}
                               />
-                              <small
-                                className="mr-2 align-self-center text-muted"
-                              >
-                                {`${this.props.data.table_schema}`}
-                              </small>
                               <h6
                                 className="m-0 mr-2 align-self-center"
                                 id="column_name"

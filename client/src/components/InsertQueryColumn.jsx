@@ -44,7 +44,7 @@ export const InsertQueryColumn = (props) => {
 
     return (
         <div>
-            <h6 className='ml-4 d-inline'>{column.column_name}</h6>
+            <h6 className='ml-4 d-inline'>{column.table_name}.{column.column_name}</h6>
             <Button
                 className="ml-3"
                 size="sm"
@@ -60,19 +60,20 @@ export const InsertQueryColumn = (props) => {
                 id={`column-returning-${column.id}`}
                 key={column.id}
                 name="returning"
+                disabled={props.returning}
                 checked={returning}
                 onChange={handleSwitch}
                 label="Returning">
             </CustomInput>
             </InputGroup>
             <Col sm='1' className='mr-4 ml-4'>
-                {rowCount.map(i =>
+                {!props.fromQuery && rowCount.map(i =>
                 <Row key={`column-values-row-${i}`}>
                     <Input className='mt-2 mb-2'
                     key={`column-value-${i}`}
                     name={i}
                     type="text"
-                    placeholder="filter"
+                    placeholder="NULL"
                     defaultValue={props.data.column_values[i].value}
                     onBlur={handleSave}
                     onChange={handleChange}
@@ -88,6 +89,7 @@ export const InsertQueryColumn = (props) => {
 const mapStateToProps = (store) => ({
     fromQuery: store.query.fromQuery,
     rows: store.query.rows,
+    returning: store.query.returning,
 });
 
 const mapDispatchToProps = {
