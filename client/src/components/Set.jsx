@@ -34,7 +34,6 @@ export const Set = (props) => {
 
       props.updateSet(set);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.set.subqueryId]);
 
   const selectedQuery = props.queries.find(query => query.id === props.set.subqueryId);

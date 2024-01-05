@@ -4,11 +4,15 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as PropTypes from 'prop-types';
-import { addColumn, addTable, removeTable } from '../actions/queryActions';
+import { addColumn, addTable, query, removeTable, resetQuery } from '../actions/queryActions';
 import { withToggle } from '../hocs/withToggle';
 
-export const DatabaseTable = ({ data, checked, id, addTableProp, toggle, toggleStatus }) => {
+export const DatabaseTable = ({ data, checked, id, addTableProp, toggle, toggleStatus, queryType, resetQuery }) => {
   const handleOnClick = () => {
+    if (queryType === 'INSERT') {
+      resetQuery(queryType);
+    }
+
     addTableProp(data);
   };
 
@@ -77,12 +81,14 @@ DatabaseTable.propTypes = {
   addTableProp: PropTypes.func,
   toggle: PropTypes.func,
   toggleStatus: PropTypes.bool,
+  queryType: PropTypes.string,
 };
 
 const mapDispatchToProps = {
   addColumn,
   addTableProp: data => addTable(data),
   removeTable,
+  resetQuery,
 };
 
 export default withToggle(connect(null, mapDispatchToProps)(DatabaseTable));

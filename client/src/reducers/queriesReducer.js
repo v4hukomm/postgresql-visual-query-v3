@@ -9,7 +9,7 @@ import { INITIAL_STATE } from './queryReducer';
 
 const INIT_QUERIES_STATE = _.cloneDeep(INITIAL_STATE);
 
-export const queriesReducer = (state = [], action) => {
+export const queriesReducer = (state = [], action = {}) => {
   switch (action.type) {
     case ADD_QUERY: {
       let id;

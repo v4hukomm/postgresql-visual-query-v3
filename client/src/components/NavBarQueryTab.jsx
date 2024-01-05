@@ -51,6 +51,7 @@ NavBarQueryTab.propTypes = {
   setActiveQuery: PropTypes.func,
   queryName: PropTypes.string,
   active: PropTypes.bool,
+  activeQueryId: PropTypes.number,
 };
 
 const mapStateToProps = (store) => {

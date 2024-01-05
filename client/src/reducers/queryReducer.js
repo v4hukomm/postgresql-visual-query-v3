@@ -9,6 +9,7 @@ import {
   ADD_TABLE,
   CHANGE_QUERY_TYPE,
   DELETE_QUERY,
+  RESET_QUERY,
   GENERATE_SQL,
   QUERYING,
   REMOVE_COLUMN,
@@ -157,7 +158,7 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
     case ADD_ROWS: {
       const columns = _.cloneDeep(state.columns);
       columns.forEach((column) => {
-        column.column_values.push({ id: (state.rows), value: 'DEFAULT' });
+        column.column_values.push({ id: (state.rows), value: state.defaultValue });
       });
 
       return {
@@ -558,6 +559,13 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
     }
     case DELETE_QUERY: {
       return INITIAL_STATE;
+    }
+    case RESET_QUERY: {
+      return {
+        ...INITIAL_STATE,
+        id: state.id,
+        queryType: action.payload,
+      };
     }
     case GENERATE_SQL: {
       if (state.queryType === 'SELECT') {

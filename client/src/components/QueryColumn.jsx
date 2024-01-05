@@ -441,7 +441,9 @@ export class QueryColumn extends Component {
                                         onClick={this.handleSave}
                                       >
                                         {getCorrectQueryName(
-                                          this.props.language, query.queryName, query.id,
+                                          this.props.language,
+                                          query.queryName,
+                                          query.id,
                                         )}
                                       </DropdownItem>
                                     ))}

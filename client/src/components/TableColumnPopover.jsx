@@ -65,7 +65,7 @@ export const TableColumnPopover = (props) => {
 
 TableColumnPopover.propTypes = {
   data: PropTypes.shape({
-    constraints: PropTypes.array,
+    constraints: PropTypes.shape({}),
     table_id: PropTypes.number,
     column_name: PropTypes.string,
     table_schema: PropTypes.string,

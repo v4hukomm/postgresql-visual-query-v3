@@ -340,7 +340,6 @@ const addFilterToQueryNew = (data, query) => {
   columns.forEach((column) => {
     column.column_filters.forEach((filter) => {
       if (filter.filter.length > 0 && !column.returningOnly) {
-        console.log(column.column_name)
         filterList.push({id: filter.id, filter: `${column.table_name}.${column.column_name} ${filter.filter}`});
       }
     })
@@ -439,7 +438,6 @@ const addUpdateValuesToQuery = (data, query) => {
 
   columns.forEach((column) => {
     if (!column.returningOnly && column.table_id === data.tables[0].id) {
-      console.log(column)
       query.set(column.column_name, column.column_value, {dontQuote: true});
     };
   });
@@ -505,7 +503,6 @@ export const addFilterUpdate = (data, query) => {
   });
 
   let usingConditions = getUsingConditions(data, query);
-  console.log(usingConditions);
 
   query.where('(' + usingConditions.join(' AND ') + ') AND (' + filterList.join(' AND ') + ')');
 };
@@ -522,7 +519,7 @@ export const buildUpdateQuery = (data) => {
   query.table(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
   
   addUpdateValuesToQuery(data, query);
-  query.where(addFilterToQueryNew(data, query));
+  query.where(`${addFilterUpdate(data, query)} AND ${addFilterToQueryNew(data, query)}`);
   query.returning(addReturningToQuery(data, query));
 
   let queryString = query.toString().split('\n');

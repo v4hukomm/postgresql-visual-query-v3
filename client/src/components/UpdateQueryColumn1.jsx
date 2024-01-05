@@ -99,8 +99,6 @@ import { getCorrectQueryName } from '../utils/getCorrectQueryName';
     }
 
     handleSetChange(e) {
-      console.log(e.target.value);
-      console.log(this.state)
       this.setState({ [e.target.name]: e.target.value });
     };
   

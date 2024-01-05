@@ -1,10 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Table } from 'reactstrap';
+import _ from 'lodash';
 import RemoveColumnButton from './RemoveColumnButton';
 import SetInput from './SetInput';
 
-export const UpdateQueryColumnList = ({columns, tables}) => {
+export const UpdateQueryColumnList = ({ columns, tables }) => {
+    const filteredColumns = _.uniqBy(columns, 'column_name');
+
     return (
         <div className="mt-2">
            {!!columns.length &&
@@ -12,7 +15,7 @@ export const UpdateQueryColumnList = ({columns, tables}) => {
                 <thead>
                     <tr>
                     <th className='border-right'>Column name</th>
-                {columns.map((column) => (
+                {filteredColumns.map((column) => (
                     (column.table_id === tables[0].id &&
                         <th className='border-right'>
                             {column.table_name}.{column.column_name}
@@ -27,7 +30,7 @@ export const UpdateQueryColumnList = ({columns, tables}) => {
                 <tbody>
                     <tr>
                         <td className='text-right'>SET</td>
-                    {columns.map((column) => (
+                    {filteredColumns.map((column) => (
                         (column.table_id === tables[0].id &&
                             <td>
                                 <SetInput
@@ -42,6 +45,11 @@ export const UpdateQueryColumnList = ({columns, tables}) => {
             }
         </div>
     );
+};
+
+UpdateQueryColumnList.propTypes = {
+    columns: PropTypes.arrayOf(PropTypes.shape({})),
+    tables: PropTypes.arrayOf(PropTypes.shape({})),
 };
 
 const mapStateToProps = (store) => ({

@@ -37,7 +37,6 @@ SideBar.propTypes = {
 };
 
 export const TableTypeWrapper = (props) => {
-  console.log(props.index)
   return (
     <div className='d-inline-flex'>
       <div className={"d-flex flex-column m-2 border " + (props.index === 0 ? "border-success" : "border-danger")}>
@@ -55,7 +54,6 @@ export const QueryBuilder = (props) => {
       <div style={{ minHeight: '40vh' }}>
         {props.tables.map((table, index) => {
           if (['DELETE', 'UPDATE'].includes(props.queryType)) {
-            console.log('memes')
             return(
             <TableTypeWrapper
             index={index}
@@ -64,15 +62,16 @@ export const QueryBuilder = (props) => {
               key={`query-table-${index}-${table.id}`}
               id={`query-table-${index}`}
               data={table}
+              firstTableId={props.tables[0].id}
             />}
           />)
           } else
-          console.log("here?" + props.language)
           return(
           <QueryTable
             key={`query-table-${index}-${table.id}`}
             id={`query-table-${index}`}
             data={table}
+            firstTableId={props.tables[0].id}
           />)
           })}
       </div>

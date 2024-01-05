@@ -46,7 +46,7 @@
     "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
-    "extends": "react-app-rewired"
+    "extends": "react-app"
   },
   "browserslist": [
     ">0.2%",

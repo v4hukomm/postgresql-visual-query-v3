@@ -21,9 +21,13 @@ module.exports = {
   ],
   rules: {
     "linebreak-style": 0,
+    "arrow-parens": "off",
     "import/prefer-default-export": "off",
     "import/no-named-as-default": 0,
+    "import/no-extraneous-dependencies": "off",
     "react/require-default-props": 0,
+    "react/function-component-definition": "off",
+    "react/jsx-props-no-spreading": "off",
     "object-curly-newline": ["off", {
       "ObjectExpression": "always",
       "ObjectPattern": { "multiline": true },

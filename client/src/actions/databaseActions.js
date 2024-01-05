@@ -1,7 +1,4 @@
 import axios from 'axios';
-import {
-  CONNECT_ERROR, CONNECTED, CONNECTING, UPDATE_HOST,
-} from './hostActions';
 import axiosClient from '../utils/axiosClient';
 import { encrypt } from '../utils/encrypt';
 
@@ -11,6 +8,10 @@ export const ADD_CONSTRAINTS = 'ADD_CONSTRAINTS';
 export const CHANGE_SELECTED_SCHEMA = 'CHANGE_SELECTED_SCHEMA';
 export const UPDATE_SEARCH_EXPR = 'UPDATE_SEARCH_EXPR';
 export const DELETE_DATABASE = 'DELETE_DATABASE';
+export const UPDATE_HOST = 'UPDATE_HOST';
+export const CONNECT_ERROR = 'CONNECT_ERROR';
+export const CONNECTED = 'CONNECTED';
+export const CONNECTING = 'CONNECTING';
 
 export const connectToDatabase = state => (dispatch) => {
   dispatch({ type: CONNECTING });

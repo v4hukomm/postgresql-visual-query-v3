@@ -17,7 +17,8 @@ import { translations } from '../utils/translations';
 
 export const QueryColumnList = ({
   updateColumns, switchDistinctProp, columns, distinct,
-  limit, switchLimitProp, limitValue, setLimitValueProp, language, queryId, withTies, switchWithTiesProp,
+  limit, switchLimitProp, limitValue, setLimitValueProp,
+  language, queryId, withTies, switchWithTiesProp,
 }) => {
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
@@ -107,8 +108,7 @@ export const QueryColumnList = ({
                   />
                   {showFilterOperandSelectbox(column, columns, index)
                     ? (<FilterOperandSelectbox column={column} />)
-                    : null
-                  }
+                    : null}
                 </React.Fragment>
               ))}
               {provided.placeholder}
@@ -131,6 +131,8 @@ QueryColumnList.propTypes = {
   setLimitValueProp: PropTypes.func,
   language: PropTypes.shape({ code: PropTypes.string }),
   queryId: PropTypes.number,
+  withTies: PropTypes.bool,
+  switchWithTiesProp: PropTypes.func,
 };
 
 const mapStateToProps = (store) => {
@@ -146,7 +148,6 @@ const mapStateToProps = (store) => {
     queryId: store.query.id,
   });
 };
-
 
 const mapDispatchToProps = {
   updateColumns: data => updateColumnsOrder(data),

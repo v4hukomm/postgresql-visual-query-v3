@@ -25,6 +25,7 @@ export const UPDATE_USING = 'UPDATE_USING';
 export const REMOVE_USING = 'REMOVE_USING';
 export const REMOVE_COLUMN = 'REMOVE_COLUMN';
 export const DELETE_QUERY = 'DELETE_QUERY';
+export const RESET_QUERY = 'RESET_QUERY';
 export const QUERYING = 'QUERYING';
 export const UPDATE_COLUMN_OPERAND = 'UPDATE_COLUMN_OPERAND';
 export const UPDATE_SQL = 'UPDATE_SQL';
@@ -94,12 +95,12 @@ export const updateFromQuery = (data) => (dispatch) => {
 
 export const changeQueryType = data => (dispatch) => {
   dispatch({ type: CHANGE_QUERY_TYPE, payload: data });
-}
+};
 
 export const changeDefaultValue = data => (dispatch) => {
-  dispatch({ type: CHANGE_DEFAULT_VALUE, payload: data});
+  dispatch({ type: CHANGE_DEFAULT_VALUE, payload: data });
   dispatch({ type: GENERATE_SQL });
-}
+};
 
 export const addTable = data => (dispatch) => {
   dispatch({ type: ADD_TABLE, payload: data });
@@ -161,9 +162,9 @@ export const updateJoin = data => (dispatch) => {
 };
 
 export const updateJoinNewTable = data => (dispatch) => {
-  dispatch({ type: UPDATE_JOIN_NEW_TABLE, payload: data});
+  dispatch({ type: UPDATE_JOIN_NEW_TABLE, payload: data });
   dispatch({ type: GENERATE_SQL });
-}
+};
 
 export const removeJoin = data => (dispatch) => {
   dispatch({ type: REMOVE_JOIN, payload: data });
@@ -188,6 +189,10 @@ export const removeColumn = data => (dispatch) => {
 };
 
 export const deleteQuery = () => ({ type: DELETE_QUERY });
+
+export const resetQuery = data => (dispatch) => {
+  dispatch({ type: RESET_QUERY, payload: data })
+};
 
 export const updateSql = sqlString => ({ type: UPDATE_SQL, payload: { sqlString } });
 

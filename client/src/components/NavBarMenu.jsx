@@ -49,7 +49,6 @@ export const NavBarMenu = (props) => {
   return (
     <div className="pl-2 align-self-start m-0 pt-1 pb-2 bg-light">
       {props.activeQuery.id !== 0 && (
-        <>
           <Row form>
             <div className="col-auto">
               <InputWithDeleteButton
@@ -65,7 +64,6 @@ export const NavBarMenu = (props) => {
               />
             </div>
           </Row>
-        </>
       )}
       <div className="col-12 pl-0 text-info pt-6">
         <AddNewButton size="sm" id="newQuery" onClick={handleAddQuery} />
@@ -76,7 +74,7 @@ export const NavBarMenu = (props) => {
           <Label
             for="changeQueryType"
           >
-            Statement type: 
+            Statement type:
           </Label>
           <Col md={1}>
             <Input
@@ -84,7 +82,7 @@ export const NavBarMenu = (props) => {
               type="select"
               id="changeQueryType"
               onChange={handleTypeChange}
-              value={props.activeQuery.queryType}
+              value={props.queryType}
             >
               <option value="SELECT">SELECT</option>
               <option value="DELETE">DELETE</option>
@@ -103,11 +101,14 @@ NavBarMenu.propTypes = {
   activeQuery: PropTypes.shape({ id: PropTypes.number }),
   addQuery: PropTypes.func,
   setActiveQuery: PropTypes.func,
+  changeQueryType: PropTypes.func,
+  queryType: PropTypes.string,
 };
 
 const mapStateToProps = store => ({
   activeQuery: store.query,
   queries: store.queries,
+  queryType: store.query.queryType,
 });
 
 const mapDispatchToProps = {

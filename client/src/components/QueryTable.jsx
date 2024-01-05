@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Scrollbars } from 'react-custom-scrollbars';
 import * as PropTypes from 'prop-types';
 import _ from 'lodash';
-import { addTable, removeTable } from '../actions/queryActions';
+import { addTable, removeTable, resetQuery } from '../actions/queryActions';
 import { translations } from '../utils/translations';
 import QueryTablePopover from './QueryTablePopover';
 import TableColumn from './TableColumn';
@@ -111,14 +111,21 @@ export class QueryTable extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      target: `t_${props.data.table_schema}_${props.data.table_name.replace(' ',
-        '')}_${props.data.id}`,
-    };
-
     this.handleRemoveTable = this.handleRemoveTable.bind(this);
     this.constructData = this.constructData.bind(this);
     this.handleCopy = this.handleCopy.bind(this);
+  }
+
+  handleRemoveTable() {
+    if (['DELETE', 'UPDATE'].includes(this.props.queryType) && this.props.data.id === this.props.firstTableId) {
+      this.props.resetQuery(this.props.queryType);
+    } else {
+      this.props.removeTable(this.props.data);
+    }
+  }
+
+  handleCopy() {
+    this.props.addTable(this.props.data);
   }
 
   constructData(column) {
@@ -130,14 +137,6 @@ export class QueryTable extends Component {
     col.table_id = this.props.data.id;
 
     return col;
-  }
-
-  handleRemoveTable() {
-    this.props.removeTable(this.props.data);
-  }
-
-  handleCopy() {
-    this.props.addTable(this.props.data);
   }
 
   render() {
@@ -173,15 +172,20 @@ QueryTable.propTypes = {
   id: PropTypes.string,
   removeTable: PropTypes.func,
   addTable: PropTypes.func,
+  queryType: PropTypes.string,
+  resetQuery: PropTypes.func,
+  firstTableId: PropTypes.string,
 };
 
 const mapStateToProps = store => ({
   language: store.settings.language,
+  queryType: store.query.queryType,
 });
 
 const mapDispatchToProps = {
   removeTable,
   addTable,
+  resetQuery,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(QueryTable);
