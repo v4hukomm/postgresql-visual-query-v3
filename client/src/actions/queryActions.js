@@ -191,7 +191,7 @@ export const removeColumn = data => (dispatch) => {
 export const deleteQuery = () => ({ type: DELETE_QUERY });
 
 export const resetQuery = data => (dispatch) => {
-  dispatch({ type: RESET_QUERY, payload: data })
+  dispatch({ type: RESET_QUERY, payload: data });
 };
 
 export const updateSql = sqlString => ({ type: UPDATE_SQL, payload: { sqlString } });

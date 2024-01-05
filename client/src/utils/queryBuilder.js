@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import { filter } from 'lodash';
 import * as format from 'pg-format';
 import * as squel from 'squel';
 
@@ -13,11 +12,15 @@ const addColumnsToQuery = (data, query) => {
 
   const addOrder = (column) => {
     if (_.isEmpty(column.table_alias)) {
-      query.order(`${format.ident(column.table_name)}.${format.ident(column.column_name)}`,
-        column.column_order_dir);
+      query.order(
+        `${format.ident(column.table_name)}.${format.ident(column.column_name)}`,
+        column.column_order_dir,
+      );
     } else {
-      query.order(`${format.ident(column.table_alias)}.${format.ident(column.column_name)}`,
-        column.column_order_dir);
+      query.order(
+        `${format.ident(column.table_alias)}.${format.ident(column.column_name)}`,
+        column.column_order_dir,
+      );
     }
   };
 
@@ -26,8 +29,10 @@ const addColumnsToQuery = (data, query) => {
   };
 
   const addFieldWithAlias = (table, column, alias) => {
-    query.field(`${format.ident(table)}.${format.ident(column)}`,
-      `${format.ident(alias)}`);
+    query.field(
+      `${format.ident(table)}.${format.ident(column)}`,
+      `${format.ident(alias)}`,
+    );
   };
 
   const addGroupBy = (table, column) => {
@@ -200,12 +205,17 @@ const addJoinsToQuery = (data, query) => {
 
   const addJoin = (joinObj, on, joinFn) => {
     if (!_.isEmpty(joinObj.main_table.table_alias)) {
-      joinFn(`${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
-        `${format.ident(joinObj.main_table.table_alias)}`, on);
+      joinFn(
+        `${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
+        `${format.ident(joinObj.main_table.table_alias)}`,
+        on,
+      );
     } else {
-      joinFn(`${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
+      joinFn(
+        `${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
         null,
-        on);
+        on,
+      );
     }
   };
 
@@ -281,8 +291,10 @@ const addTablesToQuery = (data, query) => {
     if (_.isEmpty(table.table_alias)) {
       query.from(`${format.ident(table.table_schema)}.${format.ident(table.table_name)}`);
     } else {
-      query.from(`${format.ident(table.table_schema)}.${format.ident(table.table_name)}`,
-        `${format.ident(table.table_alias)}`);
+      query.from(
+        `${format.ident(table.table_schema)}.${format.ident(table.table_name)}`,
+        `${format.ident(table.table_alias)}`,
+      );
     }
   };
 
@@ -320,83 +332,83 @@ export const buildQuery = (data) => {
   const setQueryString = buildSetQuery(data);
 
   if (data.limit && data.limitValue) {
-    return `${query.toString() + setQueryString  + '\n' + 'FETCH FIRST ' + data.limitValue + ' ROWS ' + (data.withTies ? 'WITH TIES;' : 'ONLY;')}`;
+    return `${`${query.toString() + setQueryString}\n` + `FETCH FIRST ${data.limitValue} ROWS ${data.withTies ? 'WITH TIES;' : 'ONLY;'}`}`;
   }
 
   return `${query}${setQueryString};`;
 };
 
-const addFilterToQueryNew = (data, query) => {
+const addFilterToQueryNew = (data) => {
   const columns = _.cloneDeep(data.columns);
 
   let whereQuery = '';
-  let filterList = [];
+  const filterList = [];
   let filterLength;
 
   if (columns[0]) {
     filterLength = columns[0].column_filters.length;
-  };
+  }
 
   columns.forEach((column) => {
     column.column_filters.forEach((filter) => {
       if (filter.filter.length > 0 && !column.returningOnly) {
-        filterList.push({id: filter.id, filter: `${column.table_name}.${column.column_name} ${filter.filter}`});
+        filterList.push({ id: filter.id, filter: `${column.table_name}.${column.column_name} ${filter.filter}` });
       }
-    })
+    });
   });
 
-  let finalFilter = [];
+  const finalFilter = [];
 
-  for (let i = 0; i < filterLength + 1; i++) {
-    let filterRow = [];
+  for (let i = 0; i < filterLength + 1; i += 1) {
+    const filterRow = [];
     filterList.forEach((filterCell) => {
       if (filterCell.id === i) {
         filterRow.push(filterCell.filter);
       }
     });
     if (filterRow.length > 0) {
-      finalFilter.push('(' + filterRow.join(' AND ') + ')');
-    };
+      finalFilter.push(`(${filterRow.join(' AND ')})`);
+    }
   }
   whereQuery += finalFilter.join(' OR ');
   return whereQuery;
 };
 
-const getUsingTables = (data, query) =>  {
+const getUsingTables = (data) => {
   const usings = _.cloneDeep(data.using);
 
-  let usingTables = [];
+  const usingTables = [];
 
   usings.forEach((using) => {
     usingTables.push(`${using.main_table.table_schema}.${using.main_table.table_name}`);
   });
-  
+
   return usingTables;
 };
 
-const getUsingConditions = (data, query) =>  {
+const getUsingConditions = (data) => {
   const usings = _.cloneDeep(data.using);
 
-  let usingConditions = [];
+  const usingConditions = [];
 
   usings.forEach((using) => {
     using.conditions.forEach((condition) => {
       usingConditions.push(`${condition.secondary_table.table_name}.${condition.secondary_column} = ${using.main_table.table_name}.${condition.main_column}`);
     });
   });
-  
+
   return usingConditions;
 };
 
-const addReturningToQuery = (data, query) => {
+const addReturningToQuery = (data) => {
   const columns = _.cloneDeep(data.columns);
 
   let returning = '';
-  let returningColumns = [];
+  const returningColumns = [];
 
   columns.forEach((column) => {
     if (column.returning || column.returningOnly) {
-      returningColumns.push(`${column.table_name}.${column.column_name}`)
+      returningColumns.push(`${column.table_name}.${column.column_name}`);
     }
   });
 
@@ -404,17 +416,16 @@ const addReturningToQuery = (data, query) => {
 
   if (data.returning) {
     return '*';
-  } else {
-    return returning;
   }
+  return returning;
 };
 
 const addInsertValuesToQuery = (data, query) => {
   const columns = _.cloneDeep(data.columns);
-  let valuesList = [];
+  const valuesList = [];
 
-  for (let i = 0; i < data.rows; i++) {
-    let valueRow = {};
+  for (let i = 0; i < data.rows; i += 1) {
+    const valueRow = {};
 
     columns.forEach((column) => {
       if (!column.returningOnly) {
@@ -426,20 +437,21 @@ const addInsertValuesToQuery = (data, query) => {
       }
     });
 
-    query.setFields(valueRow, {dontQuote: true});
-    valuesList.push(query.toString().split('\n').slice(-1).toString().split('VALUES').slice(-1));
-  };
+    query.setFields(valueRow, { dontQuote: true });
+    valuesList.push(query.toString().split('\n').slice(-1).toString()
+      .split('VALUES')
+      .slice(-1));
+  }
   return valuesList;
 };
 
 const addUpdateValuesToQuery = (data, query) => {
   const columns = _.cloneDeep(data.columns);
-  
 
   columns.forEach((column) => {
-    if (!column.returningOnly && column.table_id === data.tables[0].id) {
-      query.set(column.column_name, column.column_value, {dontQuote: true});
-    };
+    if (!column.returningOnly && column.table_id === data.tables[0].id && column.value_enabled) {
+      query.set(column.column_name, column.column_value, { dontQuote: true });
+    }
   });
 };
 
@@ -454,13 +466,13 @@ export const buildDeleteQuery = (data) => {
 
   query.from(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
 
-  let usingTables = getUsingTables(data, query);
-  let usingConditions = getUsingConditions(data, query)
-  
-  return `${query.toString()
-  + (usingTables.length > 0 ? '\nUSING ' + usingTables.join(', ') + '\n' + 'WHERE' + '(' + usingConditions.join(' AND ') + ')' + ' AND ' + addFilterToQueryNew(data, query)
-  : (addFilterToQueryNew(data, query).length > 0 ? '\nWHERE ' + addFilterToQueryNew(data, query) : ''))
-  + '\n' + (addReturningToQuery(data, query).length > 0 ? 'RETURNING ' + addReturningToQuery(data, query) : '')};`
+  const usingTables = getUsingTables(data, query);
+  const usingConditions = getUsingConditions(data, query);
+
+  return `${`${query.toString()
+  + (usingTables.length > 0 ? `\nUSING ${usingTables.join(', ')}\n` + 'WHERE' + `(${usingConditions.join(' AND ')})` + ` AND ${addFilterToQueryNew(data, query)}`
+    : (addFilterToQueryNew(data, query).length > 0 ? `\nWHERE ${addFilterToQueryNew(data, query)}` : ''))
+  }\n${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
 };
 
 export const buildInsertQuery = (data) => {
@@ -473,38 +485,37 @@ export const buildInsertQuery = (data) => {
   });
 
   query.into(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
-  
-  let columnString = [];
-    data.columns.forEach((column) => {
-      if (!column.returningOnly) {
-        columnString.push(column.column_name);
-      }
-    });
+
+  const columnString = [];
+  data.columns.forEach((column) => {
+    if (!column.returningOnly) {
+      columnString.push(column.column_name);
+    }
+  });
 
   if (data.fromQuery) {
-    return `${query.toString() + ' (' + columnString.join(', ') + ')' + '\n' + data.subquerySql.slice(0, -1) + '\n' + (addReturningToQuery(data, query).length > 0 ? 'RETURNING ' + addReturningToQuery(data, query) : '')};`;
-  } else {
-    return `${'INSERT\n' + query.toString().split('\n').slice(-1).join('\n') + ' ' + (columnString.length> 0 ? '(' + columnString.join(', ') + ')\nVALUES' + addInsertValuesToQuery(data, query).join(',') + '\n': '') +
-    (addReturningToQuery(data, query).length > 0 ? 'RETURNING ' + addReturningToQuery(data, query) : '')};`
-  };
+    return `${`${query.toString()} (${columnString.join(', ')})` + `\n${data.subquerySql.slice(0, -1)}\n${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
+  }
+  return `${`INSERT\n${query.toString().split('\n').slice(-1).join('\n')} ${columnString.length > 0 ? `(${columnString.join(', ')})\nVALUES${addInsertValuesToQuery(data, query).join(',')}\n` : ''
+  }${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
 };
 
 export const addFilterUpdate = (data, query) => {
   const columns = _.cloneDeep(data.columns);
 
-  let filterList = [];
+  const filterList = [];
 
   columns.forEach((column) => {
     if (column.subquerySql.length > 0) {
-      filterList.push(`${column.column_filter}(${column.subquerySql.replaceAll('\n', " ").replace(";", "")})`); 
+      filterList.push(`${column.column_filter}(${column.subquerySql.replaceAll('\n', ' ').replace(';', '')})`);
     } else if (column.column_filter.length > 0) {
-        filterList.push(`${column.column_filter}`);
-      }
+      filterList.push(`${column.column_filter}`);
+    }
   });
 
-  let usingConditions = getUsingConditions(data, query);
+  const usingConditions = getUsingConditions(data, query);
 
-  query.where('(' + usingConditions.join(' AND ') + ') AND (' + filterList.join(' AND ') + ')');
+  query.where(`(${usingConditions.join(' AND ')}) AND (${filterList.join(' AND ')})`);
 };
 
 export const buildUpdateQuery = (data) => {
@@ -517,13 +528,13 @@ export const buildUpdateQuery = (data) => {
   });
 
   query.table(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
-  
+
   addUpdateValuesToQuery(data, query);
   query.where(`${addFilterUpdate(data, query)} AND ${addFilterToQueryNew(data, query)}`);
   query.returning(addReturningToQuery(data, query));
 
-  let queryString = query.toString().split('\n');
-  let usingTables = getUsingTables(data, query);
+  const queryString = query.toString().split('\n');
+  const usingTables = getUsingTables(data, query);
 
-  return queryString.slice(0, 3).join('\n') + (usingTables.length > 0 ? '\n' + 'FROM ' + usingTables.join(', ') : '') + '\n' + queryString.slice(3, queryString.length).join('\n'); 
+  return `${queryString.slice(0, 3).join('\n') + (usingTables.length > 0 ? `${'\n' + 'FROM '}${usingTables.join(', ')}` : '')}\n${queryString.slice(3, queryString.length).join('\n')}`;
 };

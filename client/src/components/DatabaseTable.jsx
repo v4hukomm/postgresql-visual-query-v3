@@ -4,10 +4,12 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as PropTypes from 'prop-types';
-import { addColumn, addTable, query, removeTable, resetQuery } from '../actions/queryActions';
+import { addColumn, addTable, removeTable, resetQuery } from '../actions/queryActions';
 import { withToggle } from '../hocs/withToggle';
 
-export const DatabaseTable = ({ data, checked, id, addTableProp, toggle, toggleStatus, queryType, resetQuery }) => {
+export const DatabaseTable = ({
+  data, checked, id, addTableProp, toggle, toggleStatus, queryType, resetQuery,
+}) => {
   const handleOnClick = () => {
     if (queryType === 'INSERT') {
       resetQuery(queryType);

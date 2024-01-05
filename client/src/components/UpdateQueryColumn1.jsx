@@ -25,187 +25,187 @@ import { addColumn, removeColumn, updateColumn } from '../actions/queryActions';
 import { translations } from '../utils/translations';
 import { bannedWords } from '../utils/bannedWords';
 import { getCorrectQueryName } from '../utils/getCorrectQueryName';
-  
-  const RemoveButton = ({ id, handleRemoveColumn }) => (
-    <div>
-      <Button
-        size="sm"
-        color="danger"
-        id={`${id}_remove`}
-        onClick={handleRemoveColumn}
-      >
-        <FontAwesomeIcon icon="times" />
-      </Button>
-    </div>
-  );
-  
-  RemoveButton.propTypes = {
-    id: PropTypes.string,
-    handleRemoveColumn: PropTypes.func,
-  };
-  
-  export class UpdateQueryColumn extends Component {
-    constructor(props) {
-      super(props);
-  
-      this.state = {
-        column_alias: props.data.column_alias,
-        column_filter: props.data.column_filter,
-        filter_valid: true,
-        dropDownOpen: false,
-        column_value: props.data.column_value,
-      };
-  
-      this.handleChange = this.handleChange.bind(this);
-      this.handleSetChange = this.handleSetChange.bind(this);
-      this.handleRemove = this.handleRemove.bind(this);
-      this.handleSave = this.handleSave.bind(this);
-      this.handleSwitch = this.handleSwitch.bind(this);
-      this.handleRemoveColumn = this.handleRemoveColumn.bind(this);
-      this.handleCopy = this.handleCopy.bind(this);
-      this.handleDropDown = this.handleDropDown.bind(this);
-    }
-  
-    componentDidMount() {
-      if (this.props.data.subqueryId) {
-        let column = _.cloneDeep(this.props.data);
-        
-        const subquery = this.props.queries
-          .find(query => query.id === this.props.data.subqueryId);
 
-        const subquerySql = (!typeof subquery === 'undefined' ? subquery.sql : '');
-  
-        column = {
-          ...column,
-          subquerySql,
-        };
-  
-        this.props.updateColumn(column);
-      }
-    }
-  
-    handleDropDown() {
-      this.setState(prevState => ({
-        dropDownOpen: !prevState.dropDownOpen,
-      }));
-    }
-  
-    handleRemoveColumn() {
-      this.props.removeColumn(this.props.data);
-    }
-  
-    handleChange(e) {
-      this.setState({ [e.target.name]: e.target.value });
-    }
+const RemoveButton = ({ id, handleRemoveColumn }) => (
+  <div>
+    <Button
+      size="sm"
+      color="danger"
+      id={`${id}_remove`}
+      onClick={handleRemoveColumn}
+    >
+      <FontAwesomeIcon icon="times" />
+    </Button>
+  </div>
+);
 
-    handleSetChange(e) {
-      this.setState({ [e.target.name]: e.target.value });
+RemoveButton.propTypes = {
+  id: PropTypes.string,
+  handleRemoveColumn: PropTypes.func,
+};
+
+export class UpdateQueryColumn extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      column_alias: props.data.column_alias,
+      column_filter: props.data.column_filter,
+      filter_valid: true,
+      dropDownOpen: false,
+      column_value: props.data.column_value,
     };
-  
-    handleCopy() {
-      this.props.addColumn(this.props.data);
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSetChange = this.handleSetChange.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
+    this.handleSave = this.handleSave.bind(this);
+    this.handleSwitch = this.handleSwitch.bind(this);
+    this.handleRemoveColumn = this.handleRemoveColumn.bind(this);
+    this.handleCopy = this.handleCopy.bind(this);
+    this.handleDropDown = this.handleDropDown.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.data.subqueryId) {
+      let column = _.cloneDeep(this.props.data);
+
+      const subquery = this.props.queries
+        .find(query => query.id === this.props.data.subqueryId);
+
+      const subquerySql = (!typeof subquery === 'undefined' ? subquery.sql : '');
+
+      column = {
+        ...column,
+        subquerySql,
+      };
+
+      this.props.updateColumn(column);
     }
-  
-    handleRemove(e) {
-      const { state } = this;
-  
+  }
+
+  handleDropDown() {
+    this.setState(prevState => ({
+      dropDownOpen: !prevState.dropDownOpen,
+    }));
+  }
+
+  handleRemoveColumn() {
+    this.props.removeColumn(this.props.data);
+  }
+
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  handleSetChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  handleCopy() {
+    this.props.addColumn(this.props.data);
+  }
+
+  handleRemove(e) {
+    const { state } = this;
+
+    this.setState({
+      ...state,
+      [e.currentTarget.name]: '',
+    });
+
+    let column = _.cloneDeep(this.props.data);
+
+    column = {
+      ...column,
+      [e.currentTarget.name]: '',
+    };
+
+    if (_.isEqual(e.target.name, 'column_filter')) {
       this.setState({
-        ...state,
-        [e.currentTarget.name]: '',
+        filter_valid: true,
       });
-  
-      let column = _.cloneDeep(this.props.data);
-  
+    }
+
+    this.props.updateColumn(column);
+  }
+
+  handleSave(e) {
+    let column = _.cloneDeep(this.props.data);
+
+    if (e.currentTarget.name === 'subqueryDefault') {
       column = {
         ...column,
-        [e.currentTarget.name]: '',
+        subqueryId: 0,
+        subquerySql: '',
       };
-  
-      if (_.isEqual(e.target.name, 'column_filter')) {
-        this.setState({
-          filter_valid: true,
-        });
-      }
-  
-      this.props.updateColumn(column);
     }
-  
-    handleSave(e) {
-      let column = _.cloneDeep(this.props.data);
 
-      if (e.currentTarget.name === 'subqueryDefault') {
-        column = {
-          ...column,
-          subqueryId: 0,
-          subquerySql: '',
-        };
-      }
-  
-      if (e.currentTarget.name === 'subqueryId') {
-        const subqueryId = +e.target.value;
-        const subquerySql = this.props.queries.find(query => query.id === subqueryId).sql;
-  
-        column = {
-          ...column,
-          subqueryId,
-          subquerySql,
-        };
-      } else {
-        column = {
-          ...column,
-          [e.target.name]: e.target.value,
-        };
-      }
+    if (e.currentTarget.name === 'subqueryId') {
+      const subqueryId = +e.target.value;
+      const subquerySql = this.props.queries.find(query => query.id === subqueryId).sql;
 
-      this.props.updateColumn(column);
-    }
-  
-    handleSwitch(e) {
-      let column = _.cloneDeep(this.props.data);
-  
       column = {
         ...column,
-        [e.target.name]: !column[e.target.name],
+        subqueryId,
+        subquerySql,
       };
-  
-      this.props.updateColumn(column);
+    } else {
+      column = {
+        ...column,
+        [e.target.name]: e.target.value,
+      };
     }
-  
-    render() {
-      const orderDirection = this.props.data.column_order_dir
-        ? translations[this.props.language.code].queryBuilder.ascL
-        : translations[this.props.language.code].queryBuilder.descL;
-      const columnOrderVisibility = this.props.data.column_order ? 'visible' : 'invisible';
-      const columnName = _.isEmpty(this.props.data.table_alias)
-        ? `${this.props.data.table_name}.${this.props.data.column_name}`
-        : `${this.props.data.table_alias}.${this.props.data.column_name}`;
-      const filterValid = this.state.filter_valid ? '' : 'is-invalid';
-      const linkedQuery = this.props.queries.find(query => query.id === this.props.data.subqueryId);
-      const linkedQueryName = linkedQuery
-        ? getCorrectQueryName(this.props.language, linkedQuery.queryName, linkedQuery.id)
-        : translations[this.props.language.code].queryBuilder.linkSq;
-  
-      return (
-        <Draggable
-          draggableId={`${this.props.id}`}
-          index={this.props.index}
-        >
-          {provided => (
-            <div className="m-auto">
-              <Card
-                className="px-0 my-2"
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-                innerRef={provided.innerRef}
-              >
-                <CardBody className="mx-0 pr-2 pl-1 pt-1 pb-1">
-                  <Form inline className="align-content-center">
-                    <Container fluid className="pr-0">
-                      <Row form>
-                        <div className="col-auto pl-0 pr-3 d-flex align-items-center">
+
+    this.props.updateColumn(column);
+  }
+
+  handleSwitch(e) {
+    let column = _.cloneDeep(this.props.data);
+
+    column = {
+      ...column,
+      [e.target.name]: !column[e.target.name],
+    };
+
+    this.props.updateColumn(column);
+  }
+
+  render() {
+    const orderDirection = this.props.data.column_order_dir
+      ? translations[this.props.language.code].queryBuilder.ascL
+      : translations[this.props.language.code].queryBuilder.descL;
+    const columnOrderVisibility = this.props.data.column_order ? 'visible' : 'invisible';
+    const columnName = _.isEmpty(this.props.data.table_alias)
+      ? `${this.props.data.table_name}.${this.props.data.column_name}`
+      : `${this.props.data.table_alias}.${this.props.data.column_name}`;
+    const filterValid = this.state.filter_valid ? '' : 'is-invalid';
+    const linkedQuery = this.props.queries.find(query => query.id === this.props.data.subqueryId);
+    const linkedQueryName = linkedQuery
+      ? getCorrectQueryName(this.props.language, linkedQuery.queryName, linkedQuery.id)
+      : translations[this.props.language.code].queryBuilder.linkSq;
+
+    return (
+      <Draggable
+        draggableId={`${this.props.id}`}
+        index={this.props.index}
+      >
+        {provided => (
+          <div className="m-auto">
+            <Card
+              className="px-0 my-2"
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              innerRef={provided.innerRef}
+            >
+              <CardBody className="mx-0 pr-2 pl-1 pt-1 pb-1">
+                <Form inline className="align-content-center">
+                  <Container fluid className="pr-0">
+                    <Row form>
+                      <div className="col-auto pl-0 pr-3 d-flex align-items-center">
                           <FontAwesomeIcon className="" icon="sort" />
                         </div>
-                        <div className="col-10 p-0">
+                      <div className="col-10 p-0">
                           <Row form>
                             <div className="col-auto d-flex">
                               <CustomInput
@@ -240,22 +240,22 @@ import { getCorrectQueryName } from '../utils/getCorrectQueryName';
                           </Row>
                           <Row form>
                             SET
-                          <div className="col-auto">
-                            <InputGroup
-                              className="my-1 align-self-start"
-                              size="sm"
-                            >
-                              <Input
-                                id={`column-value-${this.props.id}`}
-                                name="column_value"
-                                key={this.props.id}
-                                type="text"
-                                placeholder="SET"
-                                defaultValue=""
-                                onBlur={this.handleSave}
-                                onChange={this.handleSetChange}
-                              />
-                            </InputGroup>
+                            <div className="col-auto">
+                              <InputGroup
+                                className="my-1 align-self-start"
+                                size="sm"
+                              >
+                                <Input
+                                  id={`column-value-${this.props.id}`}
+                                  name="column_value"
+                                  key={this.props.id}
+                                  type="text"
+                                  placeholder="SET"
+                                  defaultValue=""
+                                  onBlur={this.handleSave}
+                                  onChange={this.handleSetChange}
+                                />
+                              </InputGroup>
                             </div>
                             WHERE
                             <div className="col-auto" style={{ minWidth: '35%' }}>
@@ -303,9 +303,7 @@ import { getCorrectQueryName } from '../utils/getCorrectQueryName';
                                           value={query.id}
                                           onClick={this.handleSave}
                                         >
-                                          {getCorrectQueryName(
-                                            this.props.language, query.queryName, query.id,
-                                          )}
+                                          {getCorrectQueryName(this.props.language, query.queryName, query.id)}
                                         </DropdownItem>
                                       ))}
                                     </DropdownMenu>
@@ -325,7 +323,7 @@ import { getCorrectQueryName } from '../utils/getCorrectQueryName';
                             </div>
                           </Row>
                         </div>
-                        <div className="col d-flex w-100 ml-auto">
+                      <div className="col d-flex w-100 ml-auto">
                           <FormGroup className="align-self-center justify-content-end m-0 ml-auto">
                             <RemoveButton
                               id={`remove-btn-${this.props.data.id}`}
@@ -334,58 +332,58 @@ import { getCorrectQueryName } from '../utils/getCorrectQueryName';
                             />
                           </FormGroup>
                         </div>
-                      </Row>
-                    </Container>
-                  </Form>
-                </CardBody>
-              </Card>
-            </div>
-          )}
-        </Draggable>
-      );
-    }
+                    </Row>
+                  </Container>
+                </Form>
+              </CardBody>
+            </Card>
+          </div>
+        )}
+      </Draggable>
+    );
   }
-  
-  UpdateQueryColumn.propTypes = {
-    data: PropTypes.shape({
-      column_alias: PropTypes.string,
-      column_filter: PropTypes.string,
-      column_order_dir: PropTypes.bool,
-      column_order: PropTypes.bool,
-      table_alias: PropTypes.string,
-      table_name: PropTypes.string,
-      column_name: PropTypes.string,
-      id: PropTypes.number,
-      display_in_query: PropTypes.bool,
-      table_schema: PropTypes.string,
-      data_type: PropTypes.string,
-      column_distinct_on: PropTypes.bool,
-      column_group_by: PropTypes.bool,
-      column_aggregate: PropTypes.string,
-      subqueryId: PropTypes.number,
-      filter_as_having: PropTypes.bool,
-    }),
-    removeColumn: PropTypes.func,
-    addColumn: PropTypes.func,
-    updateColumn: PropTypes.func,
-    id: PropTypes.string,
-    index: PropTypes.number,
-    distinct: PropTypes.bool,
-    language: PropTypes.shape({ code: PropTypes.string }),
-    queries: PropTypes.arrayOf(PropTypes.shape({})),
-  };
-  
-  const mapStateToProps = store => ({
-    returning: store.query.returning,
-    language: store.settings.language,
-    queries: store.queries.filter(query => query.id !== 0)
-      .sort((query1, query2) => query1.id - query2.id),
-  });
-  
-  const mapDispatchToProps = {
-    updateColumn,
-    removeColumn,
-    addColumn,
-  };
+}
+
+UpdateQueryColumn.propTypes = {
+  data: PropTypes.shape({
+    column_alias: PropTypes.string,
+    column_filter: PropTypes.string,
+    column_order_dir: PropTypes.bool,
+    column_order: PropTypes.bool,
+    table_alias: PropTypes.string,
+    table_name: PropTypes.string,
+    column_name: PropTypes.string,
+    id: PropTypes.number,
+    display_in_query: PropTypes.bool,
+    table_schema: PropTypes.string,
+    data_type: PropTypes.string,
+    column_distinct_on: PropTypes.bool,
+    column_group_by: PropTypes.bool,
+    column_aggregate: PropTypes.string,
+    subqueryId: PropTypes.number,
+    filter_as_having: PropTypes.bool,
+  }),
+  removeColumn: PropTypes.func,
+  addColumn: PropTypes.func,
+  updateColumn: PropTypes.func,
+  id: PropTypes.string,
+  index: PropTypes.number,
+  distinct: PropTypes.bool,
+  language: PropTypes.shape({ code: PropTypes.string }),
+  queries: PropTypes.arrayOf(PropTypes.shape({})),
+};
+
+const mapStateToProps = store => ({
+  returning: store.query.returning,
+  language: store.settings.language,
+  queries: store.queries.filter(query => query.id !== 0)
+    .sort((query1, query2) => query1.id - query2.id),
+});
+
+const mapDispatchToProps = {
+  updateColumn,
+  removeColumn,
+  addColumn,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(UpdateQueryColumn);

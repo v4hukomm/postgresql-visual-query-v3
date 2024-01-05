@@ -84,12 +84,12 @@ export const QueryColumnList = ({
               {translations[language.code].tooltips.limitValue}
             </UncontrolledTooltip>
             <CustomInput
-            className="ml-2 mr-2"
-            type="switch"
-            id="ties_switch"
-            label="With ties"
-            checked={withTies}
-            onChange={switchWithTiesProp}
+              className="ml-2 mr-2"
+              type="switch"
+              id="ties_switch"
+              label="With ties"
+              checked={withTies}
+              onChange={switchWithTiesProp}
             />
           </InputGroup>
         )}

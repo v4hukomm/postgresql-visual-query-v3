@@ -106,7 +106,6 @@ const mapStateToProps = (store) => {
   });
 };
 
-
 const mapDispatchToProps = {
   updateColumns: data => updateColumnsOrder(data),
   switchReturning,

@@ -76,7 +76,7 @@ export const INITIAL_STATE = {
   defaultValue: 'DEFAULT',
 };
 
-export const queryReducer = (state = INITIAL_STATE, action) => {
+export const queryReducer = (state = INITIAL_STATE, action = {}) => {
   switch (action.type) {
     case SET_ACTIVE_QUERY: {
       const activeQuery = _.cloneDeep(action.payload);
@@ -94,7 +94,7 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       column.id = state.lastColumnId + 1;
       column.column_alias = '';
       column.column_filter = '';
-      column.column_filters = Array.from({ length: state.filterRows }, (_, index) => ({id: index , filter: ''}));
+      column.column_filters = Array.from({ length: state.filterRows }, (_, index) => ({ id: index, filter: '' }));
       column.column_aggregate = '';
       column.column_distinct_on = false;
       column.column_order = false;
@@ -107,9 +107,11 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       column.subqueryId = 0;
       column.returning = false;
       column.returningOnly = false;
-      column.column_values = Array.from({ length: state.rows }, (_, index) => ({id: index, value: state.defaultValue}));
-      column.column_update_values = { value: 'NULL' };
+      column.column_values = Array.from({
+        length: state.rows }, (_, index) => ({ id: index, value: state.defaultValue,
+      }));
       column.column_value = 'NULL';
+      column.value_enabled = true;
 
       const copies = state.columns
         .filter(stateColumn => _.isEqual(stateColumn.table_name, column.table_name)
@@ -122,8 +124,8 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         if (_.includes(copy.column_alias, `${column.column_name}_`, 0)) {
           const numb = copy.column_alias.replace(/[^0-9]/g, '');
 
-          if (parseInt(numb, 0) > largestCopy) {
-            largestCopy = parseInt(numb, 0);
+          if (parseInt(numb, 10) > largestCopy) {
+            largestCopy = parseInt(numb, 10);
           }
         }
       });
@@ -147,13 +149,13 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         queryType: action.payload,
-      }
+      };
     }
     case CHANGE_DEFAULT_VALUE: {
       return {
         ...state,
         defaultValue: state.defaultValue === 'DEFAULT' ? 'NULL' : 'DEFAULT',
-      }
+      };
     }
     case ADD_ROWS: {
       const columns = _.cloneDeep(state.columns);
@@ -164,8 +166,8 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         columns,
-        rows: state.rows + 1
-      }
+        rows: state.rows + 1,
+      };
     }
     case REMOVE_ROWS: {
       if (state.rows > 1) {
@@ -177,8 +179,11 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         return {
           ...state,
           columns,
-          rows: state.rows - 1
-        }
+          rows: state.rows - 1,
+        };
+      }
+      return {
+        ...state,
       };
     }
     case ADD_FILTER_ROW: {
@@ -190,8 +195,8 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         columns,
-        filterRows: state.filterRows + 1
-      }
+        filterRows: state.filterRows + 1,
+      };
     }
     case REMOVE_FILTER_ROW: {
       if (state.filterRows > 1) {
@@ -203,13 +208,15 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         return {
           ...state,
           columns,
-          filterRows: state.filterRows - 1
-        }
-      };
+          filterRows: state.filterRows - 1,
+        };
+      }
     }
     case UPDATE_COLUMN_FILTER: {
       const columns = _.cloneDeep(state.columns);
-      const columnIndex = state.columns.findIndex(column =>- _.isEqual(column.id, action.payload.columnId));
+      const columnIndex = state.columns.findIndex(
+        column => -_.isEqual(column.id, action.payload.columnId),
+      );
       const filters = state.columns[columnIndex].column_filters;
 
       filters[action.payload.filterId].filter = action.payload.filter;
@@ -219,7 +226,7 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         columns,
-      }
+      };
     }
     case UPDATE_FROM_QUERY: {
       const subQuery = action.payload;
@@ -228,7 +235,7 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         ...state,
         subqueryId: subQuery.subqueryId,
         subquerySql: subQuery.subquerySql,
-      }
+      };
     }
     case UPDATE_COLUMN: {
       const columns = _.cloneDeep(state.columns);
@@ -291,8 +298,8 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         if (_.includes(copy.table_alias, `${table.table_name}_`, 0)) {
           const numb = copy.table_alias.replace(/[^0-9]/g, '');
 
-          if (parseInt(numb, 0) > largestCopy) {
-            largestCopy = parseInt(numb, 0);
+          if (parseInt(numb, 10) > largestCopy) {
+            largestCopy = parseInt(numb, 10);
           }
         }
       });
@@ -418,7 +425,7 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         id = state.using[state.using.length - 1].id + 1;
       }
 
-      const using_table = {
+      const usingTable = {
         id,
         main_table: {
           table_name: '',
@@ -430,7 +437,7 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
 
       return {
         ...state,
-        using: [...state.using, using_table],
+        using: [...state.using, usingTable],
       };
     }
     case UPDATE_USING: {
@@ -507,8 +514,8 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         if (_.includes(copy.table_alias, `${table.table_name}_`, 0)) {
           const numb = copy.table_alias.replace(/[^0-9]/g, '');
 
-          if (parseInt(numb, 0) > largestCopy) {
-            largestCopy = parseInt(numb, 0);
+          if (parseInt(numb, 10) > largestCopy) {
+            largestCopy = parseInt(numb, 10);
           }
         }
       });
@@ -533,7 +540,7 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
         tables: [...state.tables, table],
         lastTableId: table.id,
         joins,
-      }
+      };
     }
     case REMOVE_JOIN: {
       const filteredJoins = state.joins.filter(join => join.id !== action.payload.id);
@@ -575,23 +582,21 @@ export const queryReducer = (state = INITIAL_STATE, action) => {
           ...state,
           sql: query,
         };
-
-      } else if (state.queryType === 'DELETE') {
+      } if (state.queryType === 'DELETE') {
         const query = buildDeleteQuery(state);
 
         return {
           ...state,
           sql: query,
         };
-      
-      } else if (state.queryType === 'INSERT') {
+      } if (state.queryType === 'INSERT') {
         const query = buildInsertQuery(state);
 
         return {
           ...state,
           sql: query,
         };
-      } else if (state.queryType === 'UPDATE') {
+      } if (state.queryType === 'UPDATE') {
         const query = buildUpdateQuery(state);
 
         return {

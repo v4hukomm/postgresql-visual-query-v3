@@ -7,8 +7,6 @@ import _ from 'lodash';
 import * as PropTypes from 'prop-types';
 import { addUsing } from '../actions/queryActions';
 import Using from './Using';
-import Join from './Join';
-import { translations } from '../utils/translations';
 
 export const UsingList = (props) => {
   const onDragEnd = (result) => {

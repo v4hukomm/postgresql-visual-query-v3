@@ -35,34 +35,6 @@ export const UsingCondition = (props) => {
     props.updateUsing(using);
   };
 
-  const handleSecondaryTableChange = (e) => {
-    e.preventDefault();
-
-    const value = JSON.parse(e.target.value);
-
-    let condition = _.cloneDeep(props.condition);
-
-    condition = {
-      ...condition,
-      secondary_table: value.table,
-      secondary_column: '',
-    };
-
-    const conditions = _.cloneDeep(props.using.conditions);
-    const conditionIndex = conditions.findIndex(_condition => _condition.id === value.id);
-
-    conditions[conditionIndex] = condition;
-
-    let using = _.cloneDeep(props.using);
-
-    using = {
-      ...using,
-      conditions,
-    };
-
-    props.updateUsing(using);
-  };
-
   const handleSecondaryColumnChange = (e) => {
     e.preventDefault();
 
@@ -70,16 +42,16 @@ export const UsingCondition = (props) => {
 
     let condition = _.cloneDeep(props.condition);
 
-    let secondary_table = {
-        table_alias: "",
-        table_name: props.tables[0].table_name,
-        table_schema: "",
+    const secondaryTable = {
+      table_alias: '',
+      table_name: props.tables[0].table_name,
+      table_schema: '',
     };
 
     condition = {
       ...condition,
       secondary_column: value.column_name,
-      secondary_table,
+      secondary_table: secondaryTable,
     };
 
     const conditions = _.cloneDeep(props.using.conditions);
@@ -110,15 +82,6 @@ export const UsingCondition = (props) => {
     };
 
     props.updateUsing(using);
-  };
-
-  const defaultValue = {
-    id: props.condition.id,
-    table: {
-      table_schema: '',
-      table_name: '',
-      table_alias: '',
-    },
   };
 
   return (
@@ -163,9 +126,9 @@ export const UsingCondition = (props) => {
       </div>
       <div className="col-auto">
         <InputGroup size="sm">
-        <InputGroupAddon addonType="prepend">
+          <InputGroupAddon addonType="prepend">
             <InputGroupText>{props.tables[0].table_name}</InputGroupText>
-        </InputGroupAddon>
+          </InputGroupAddon>
           <CustomInput
             bsSize="sm"
             type="select"
@@ -209,14 +172,13 @@ UsingCondition.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
   using: PropTypes.shape({
     id: PropTypes.number,
-    conditions: PropTypes.array,
+    conditions: PropTypes.arrayOf(PropTypes.shape([])),
     main_table: PropTypes.shape({
       table_name: PropTypes.string,
       id: PropTypes.number,
       columns: PropTypes.arrayOf(PropTypes.shape({})),
     }),
   }),
-  updateJoin: PropTypes.func,
   condition: PropTypes.shape({
     id: PropTypes.number,
     secondary_table: PropTypes.shape({

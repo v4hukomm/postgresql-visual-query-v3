@@ -11,119 +11,123 @@ import NewQueryColumnList from './NewQueryColumnList';
 import InsertQueryColumnList from './InsertQueryColumnList';
 import UpdateQueryColumnList from './UpdateQueryColumnList';
 
-
 export const QueryTabs = (props) => {
   const [activeTab, setActiveTab] = useState('1');
 
   return (
     <div>
-      {props.queryType === 'SELECT' && 
+      {props.queryType === 'SELECT'
+      && (
       <Nav tabs className="flex-row">
-      <NavItem>
-        <NavLink
-          className={activeTab === '1' ? 'active' : ''}
-          onClick={() => {
-            setActiveTab('1');
-          }}
-        >
-          {translations[props.language.code].queryBuilder.columnsH}
-        </NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink
-          className={activeTab === '2' ? 'active' : ''}
-          onClick={() => {
-            setActiveTab('2');
-          }}
-        >
-          {translations[props.language.code].queryBuilder.joinsH}
-        </NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink
-          className={activeTab === '3' ? 'active' : ''}
-          onClick={() => {
-            setActiveTab('3');
-          }}
-        >
-          {translations[props.language.code].queryBuilder.setsH}
-        </NavLink>
-      </NavItem>
-    </Nav> 
-    }
-    {props.queryType === 'DELETE' && 
+        <NavItem>
+          <NavLink
+            className={activeTab === '1' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('1');
+            }}
+          >
+            {translations[props.language.code].queryBuilder.columnsH}
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={activeTab === '2' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('2');
+            }}
+          >
+            {translations[props.language.code].queryBuilder.joinsH}
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={activeTab === '3' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('3');
+            }}
+          >
+            {translations[props.language.code].queryBuilder.setsH}
+          </NavLink>
+        </NavItem>
+      </Nav>
+      )}
+      {props.queryType === 'DELETE'
+      && (
       <Nav tabs className="flex-row">
-      <NavItem>
-        <NavLink
-          className={activeTab === '1' ? 'active' : ''}
-          onClick={() => {
-            setActiveTab('1');
-          }}
-        >
-          Columns
-        </NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink
-          className={activeTab === '2' ? 'active' : ''}
-          onClick={() => {
-            setActiveTab('2');
-          }}
-        >
-          Using
-        </NavLink>
-      </NavItem>
-    </Nav>
-    }
-    {props.queryType === 'INSERT' && 
+        <NavItem>
+          <NavLink
+            className={activeTab === '1' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('1');
+            }}
+          >
+            Columns
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={activeTab === '2' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('2');
+            }}
+          >
+            Using
+          </NavLink>
+        </NavItem>
+      </Nav>
+      )}
+      {props.queryType === 'INSERT'
+      && (
       <Nav tabs className="flex-row">
-      <NavItem>
-        <NavLink
-          className={activeTab === '1' ? 'active' : ''}
-          onClick={() => {
-            setActiveTab('1');
-          }}
-        >
-          Columns
-        </NavLink>
-      </NavItem>
-    </Nav>
-    }
-    {props.queryType === 'UPDATE' && 
+        <NavItem>
+          <NavLink
+            className={activeTab === '1' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('1');
+            }}
+          >
+            Columns
+          </NavLink>
+        </NavItem>
+      </Nav>
+      )}
+      {props.queryType === 'UPDATE'
+      && (
       <Nav tabs className="flex-row">
-      <NavItem>
-        <NavLink
-          className={activeTab === '1' ? 'active' : ''}
-          onClick={() => {
-            setActiveTab('1');
-          }}
-        >
-          Set value
-        </NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink
-          className={activeTab === '2' ? 'active' : ''}
-          onClick={() => {
-            setActiveTab('2');
-          }}
-        >
-          Filter
-        </NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink
-          className={activeTab === '3' ? 'active' : ''}
-          onClick={() => {
-            setActiveTab('3');
-          }}
-        >
-          Join
-        </NavLink>
-      </NavItem>
-    </Nav>
-    }
-    {props.queryType === 'SELECT' &&
+        <NavItem>
+          <NavLink
+            className={activeTab === '1' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('1');
+            }}
+          >
+            Set value
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={activeTab === '2' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('2');
+            }}
+          >
+            Filter
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={activeTab === '3' ? 'active' : ''}
+            onClick={() => {
+              setActiveTab('3');
+            }}
+          >
+            Join
+          </NavLink>
+        </NavItem>
+      </Nav>
+      )}
+      {props.queryType === 'SELECT'
+      && (
       <TabContent activeTab={activeTab} style={{ minHeight: '20vh' }}>
         <TabPane tabId="1">
           <Container fluid>
@@ -153,14 +157,15 @@ export const QueryTabs = (props) => {
           </Container>
         </TabPane>
       </TabContent>
-    }
-    {props.queryType === 'DELETE' && 
+      )}
+      {props.queryType === 'DELETE'
+      && (
       <TabContent activeTab={activeTab} style={{ minHeight: '20vh' }}>
         <TabPane tabId="1">
           <Container fluid>
             <Row>
               <Col sm="12" className="p-1">
-                <NewQueryColumnList/>
+                <NewQueryColumnList />
               </Col>
             </Row>
           </Container>
@@ -169,45 +174,47 @@ export const QueryTabs = (props) => {
           <Container fluid>
             <Row>
               <Col sm="12" className="p-1">
-                <UsingList/>
+                <UsingList />
               </Col>
             </Row>
           </Container>
         </TabPane>
       </TabContent>
-    }
-    {props.queryType === 'INSERT' && 
+      )}
+      {props.queryType === 'INSERT'
+      && (
       <TabContent activeTab={activeTab} style={{ minHeight: '20vh' }}>
         <TabPane tabId="1">
           <Container fluid>
-            <InsertQueryColumnList/>
+            <InsertQueryColumnList />
           </Container>
         </TabPane>
       </TabContent>
-    }
-    {props.queryType === 'UPDATE' && 
+      )}
+      {props.queryType === 'UPDATE'
+      && (
       <TabContent activeTab={activeTab} style={{ minHeight: '20vh' }}>
         <TabPane tabId="1">
           <Container fluid>
-            <UpdateQueryColumnList/>
+            <UpdateQueryColumnList />
           </Container>
         </TabPane>
         <TabPane tabId="2">
           <Container fluid>
-            <NewQueryColumnList/>
+            <NewQueryColumnList />
           </Container>
         </TabPane>
         <TabPane tabId="3">
           <Container fluid>
             <Row>
               <Col sm="12" className="p-1">
-                <UsingList/>
+                <UsingList />
               </Col>
             </Row>
           </Container>
         </TabPane>
       </TabContent>
-    }
+      )}
     </div>
   );
 };
