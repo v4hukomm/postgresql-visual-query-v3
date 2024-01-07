@@ -47,7 +47,7 @@ export const UsingList = (props) => {
           <FontAwesomeIcon icon="plus" />
         </Button>
         {' '}
-        {props.queryType === 'DELETE' ? 'Add Using' : 'Add Join' }
+        Add join
       </div>
       <DragDropContext
         onDragEnd={onDragEnd}

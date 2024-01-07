@@ -371,6 +371,11 @@ const addFilterToQueryNew = (data) => {
     }
   }
   whereQuery += finalFilter.join(' OR ');
+
+  if (whereQuery.length > 0) {
+    return `(${whereQuery})`;
+  }
+
   return whereQuery;
 };
 
@@ -470,7 +475,7 @@ export const buildDeleteQuery = (data) => {
   const usingConditions = getUsingConditions(data, query);
 
   return `${`${query.toString()
-  + (usingTables.length > 0 ? `\nUSING ${usingTables.join(', ')}\n` + 'WHERE' + `(${usingConditions.join(' AND ')})` + ` AND ${addFilterToQueryNew(data, query)}`
+  + (usingTables.length > 0 ? `\nUSING ${usingTables.join(', ')}\n` + 'WHERE ' + `(${usingConditions.join(' AND ')})` + ` AND ${addFilterToQueryNew(data, query)}`
     : (addFilterToQueryNew(data, query).length > 0 ? `\nWHERE ${addFilterToQueryNew(data, query)}` : ''))
   }\n${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
 };
@@ -494,7 +499,7 @@ export const buildInsertQuery = (data) => {
   });
 
   if (data.fromQuery) {
-    return `${`${query.toString()} (${columnString.join(', ')})` + `\n${data.subquerySql.slice(0, -1)}\n${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
+    return `${`${query.toString()} ${columnString.length > 0 ? `(${columnString.join(', ')})` : ''}` + `\n${data.subquerySql.slice(0, -1)}\n${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
   }
   return `${`INSERT\n${query.toString().split('\n').slice(-1).join('\n')} ${columnString.length > 0 ? `(${columnString.join(', ')})\nVALUES${addInsertValuesToQuery(data, query).join(',')}\n` : ''
   }${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
@@ -530,11 +535,14 @@ export const buildUpdateQuery = (data) => {
   query.table(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
 
   addUpdateValuesToQuery(data, query);
-  query.where(`${addFilterUpdate(data, query)} AND ${addFilterToQueryNew(data, query)}`);
-  query.returning(addReturningToQuery(data, query));
+  // query.where(`${addFilterUpdate(data, query)} AND ${addFilterToQueryNew(data, query)}`);
+  // query.returning(addReturningToQuery(data, query));
 
-  const queryString = query.toString().split('\n');
   const usingTables = getUsingTables(data, query);
+  const usingConditions = getUsingConditions(data);
 
-  return `${queryString.slice(0, 3).join('\n') + (usingTables.length > 0 ? `${'\n' + 'FROM '}${usingTables.join(', ')}` : '')}\n${queryString.slice(3, queryString.length).join('\n')}`;
+  return `${`${query.toString()
+    + (usingTables.length > 0 ? `\nFROM ${usingTables.join(', ')}\n` + 'WHERE ' + `(${usingConditions.join(' AND ')})` + ` AND ${addFilterToQueryNew(data, query)}`
+      : (addFilterToQueryNew(data, query).length > 0 ? `\nWHERE ${addFilterToQueryNew(data, query)}` : ''))
+  }\n${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
 };

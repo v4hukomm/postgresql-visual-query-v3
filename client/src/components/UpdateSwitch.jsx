@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
   CustomInput,
@@ -6,10 +6,12 @@ import {
 import { updateColumn } from '../actions/queryActions';
 
 export const UpdateSwitch = (props) => {
+  const [enabled, setEnabled] = useState(props.column.value_enabled);
   const { column } = props;
 
   const handleChange = () => {
     column.value_enabled = !column.value_enabled;
+    setEnabled(current => !current);
     props.updateColumn(column);
   };
 
@@ -19,8 +21,8 @@ export const UpdateSwitch = (props) => {
       name="valueSwitch"
       key={column.id}
       type="switch"
-      defaultValue={props.column.value_enabled}
-      checked={props.column.value_enabled}
+      defaultValue={enabled}
+      checked={enabled}
       onChange={handleChange}
     />
   );

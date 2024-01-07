@@ -443,14 +443,57 @@ export const queryReducer = (state = INITIAL_STATE, action = {}) => {
     case UPDATE_USING: {
       const using = _.cloneDeep(state.using);
 
-      if (action.payload.id > -1 && action.payload.id < state.using.length) {
-        using[action.payload.id] = action.payload;
+      if (action.payload.newTable) {
+        const table = _.cloneDeep(action.payload.using.main_table);
+
+        table.id = state.lastTableId + 1;
+        table.table_alias = '';
+
+        const copies = state.tables
+          .filter(stateTable => _.isEqual(stateTable.table_name, table.table_name)
+            && _.isEqual(stateTable.table_schema, table.table_schema));
+
+        let largestCopy = 0;
+
+        copies.forEach((copy) => {
+          if (_.includes(copy.table_alias, `${table.table_name}_`, 0)) {
+            const numb = copy.table_alias.replace(/[^0-9]/g, '');
+
+            if (parseInt(numb, 10) > largestCopy) {
+              largestCopy = parseInt(numb, 10);
+            }
+          }
+        });
+
+        if (copies.length > 0 && largestCopy === 0) {
+          table.table_alias = `${table.table_name}_1`;
+        }
+
+        if (largestCopy > 0) {
+          const index = largestCopy + 1;
+          table.table_alias = `${table.table_name}_${index}`;
+        }
+
+        if (action.payload.using.id > -1 && action.payload.using.id < state.using.length) {
+          using[action.payload.using.id] = action.payload.using;
+        }
+
+        return {
+          ...state,
+          lastTableId: table.id,
+          tables: [...state.tables, table],
+          using,
+        };
       }
 
-      return {
-        ...state,
-        using,
-      };
+      if (action.payload.using.id > -1 && action.payload.using.id < state.using.length) {
+        using[action.payload.using.id] = action.payload.using;
+
+        return {
+          ...state,
+          using,
+        };
+      }
     }
     case REMOVE_USING: {
       const filteredUsing = state.using.filter(using => using.id !== action.payload.id);

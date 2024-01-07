@@ -32,7 +32,12 @@ export const UsingCondition = (props) => {
       conditions,
     };
 
-    props.updateUsing(using);
+    const data = {
+      using,
+      newTable: false,
+    };
+
+    props.updateUsing(data);
   };
 
   const handleSecondaryColumnChange = (e) => {
@@ -66,7 +71,12 @@ export const UsingCondition = (props) => {
       conditions,
     };
 
-    props.updateUsing(using);
+    const data = {
+      using,
+      newTable: false,
+    };
+
+    props.updateUsing(data);
   };
 
   const handleRemove = () => {
@@ -81,7 +91,12 @@ export const UsingCondition = (props) => {
       conditions,
     };
 
-    props.updateUsing(using);
+    const data = {
+      using,
+      newTable: false,
+    };
+
+    props.updateUsing(data);
   };
 
   return (

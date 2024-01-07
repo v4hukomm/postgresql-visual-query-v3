@@ -61,7 +61,7 @@ export const QueryTabs = (props) => {
               setActiveTab('1');
             }}
           >
-            Columns
+            Filter
           </NavLink>
         </NavItem>
         <NavItem>
@@ -71,7 +71,7 @@ export const QueryTabs = (props) => {
               setActiveTab('2');
             }}
           >
-            Using
+            Join
           </NavLink>
         </NavItem>
       </Nav>
@@ -86,7 +86,7 @@ export const QueryTabs = (props) => {
               setActiveTab('1');
             }}
           >
-            Columns
+            Values
           </NavLink>
         </NavItem>
       </Nav>
@@ -101,7 +101,7 @@ export const QueryTabs = (props) => {
               setActiveTab('1');
             }}
           >
-            Set value
+            Set values
           </NavLink>
         </NavItem>
         <NavItem>

@@ -50,6 +50,39 @@ export const Using = (props) => {
     return options;
   };
 
+  const constructNewTableData = (table) => {
+    const data = {
+      table_schema: table.table_schema,
+      table_name: table.table_name,
+      table_type: table.table_type,
+      table_alias: '',
+    };
+
+    let constraints = JSON.parse(JSON.stringify(props.constraints));
+
+    constraints = constraints.filter(constraint => constraint.table_schema === data.table_schema
+      && constraint.table_name === data.table_name);
+
+    let columns = JSON.parse(JSON.stringify(props.columns));
+
+    columns = columns.filter(column => column.table_name === data.table_name
+      && column.table_schema === data.table_schema).map((column) => {
+      const col = column;
+
+      col.constraints = constraints.filter(
+        constraint => _.includes(constraint.column_name, column.column_name),
+      );
+
+      delete col.table_name;
+      delete col.table_schema;
+      return col;
+    });
+
+    data.columns = columns;
+
+    return data;
+  };
+
   const isTableSelected = _.isEmpty(props.using.main_table.table_name);
 
   const handleTableChange = (e) => {
@@ -71,7 +104,27 @@ export const Using = (props) => {
         conditions,
       };
 
-      props.updateUsing(using);
+      const data = {
+        using,
+        newTable: false,
+      };
+
+      props.updateUsing(data);
+    } else {
+      const newTable = constructNewTableData(value);
+
+      const newTableWithUsing = {
+        ...using,
+        main_table: newTable,
+        conditions,
+      };
+
+      const data = {
+        using: newTableWithUsing,
+        newTable: true,
+      };
+
+      props.updateUsing(data);
     }
   };
 
@@ -104,7 +157,12 @@ export const Using = (props) => {
       conditions,
     };
 
-    props.updateUsing(using);
+    const data = {
+      using,
+      newTable: false,
+    };
+
+    props.updateUsing(data);
   };
 
   const handleRemove = () => {
