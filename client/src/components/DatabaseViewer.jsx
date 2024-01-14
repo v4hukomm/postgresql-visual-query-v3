@@ -60,6 +60,7 @@ export const DatabaseViewer = (props) => {
                   checked={checked}
                   key={id}
                   id={id}
+                  queryType={props.queryType}
                 />
               );
           })}
@@ -77,6 +78,7 @@ DatabaseViewer.propTypes = {
   queryTable: PropTypes.arrayOf(PropTypes.shape({})),
   selectedSchema: PropTypes.string,
   searchExpr: PropTypes.string,
+  queryType: PropTypes.string,
 };
 
 const mapStateToProps = store => ({
@@ -87,6 +89,7 @@ const mapStateToProps = store => ({
   columns: store.database.columns,
   queryTable: store.query.tables,
   searchExpr: store.database.searchExpr,
+  queryType: store.query.queryType,
 });
 
 export default connect(mapStateToProps)(DatabaseViewer);

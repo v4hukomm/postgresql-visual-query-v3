@@ -37,9 +37,13 @@ export class TableColumn extends Component {
   }
 
   render() {
-    const btnSelected = this.props.columns.some(column => _.isEqual(column.table_id,
-      this.props.data.table_id) && _.isEqual(column.column_name,
-      this.props.data.column_name)) ? 'success' : 'light';
+    const btnSelected = this.props.columns.some(column => _.isEqual(
+      column.table_id,
+      this.props.data.table_id,
+    ) && _.isEqual(
+      column.column_name,
+      this.props.data.column_name,
+    )) ? 'success' : 'light';
 
     const modifiers = {
       preventOverflow: {
@@ -109,8 +113,7 @@ export class TableColumn extends Component {
           )}
         </ButtonGroup>
         {this.state.foreignKeys.length > 0
-        && <TableColumnPopover target={this.state.target} foreignKeys={this.state.foreignKeys} />
-        }
+        && <TableColumnPopover target={this.state.target} foreignKeys={this.state.foreignKeys} />}
       </div>
     );
   }
@@ -121,7 +124,7 @@ TableColumn.propTypes = {
   removeColumn: PropTypes.func,
   addColumn: PropTypes.func,
   data: PropTypes.shape({
-    constraints: PropTypes.array,
+    constraints: PropTypes.shape({}),
     table_id: PropTypes.number,
     column_name: PropTypes.string,
     table_schema: PropTypes.string,

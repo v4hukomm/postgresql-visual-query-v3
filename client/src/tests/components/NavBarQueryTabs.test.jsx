@@ -14,6 +14,9 @@ describe('Component: NavBarQueryTabs', () => {
   beforeEach(() => {
     props = {
       activeIndex: 1,
+      query: {
+        id: 1,
+      },
       queries: [
         {
           id: 1,

@@ -34,6 +34,7 @@ export const ResultTable = (props) => {
       maxWidth: 50,
       filterable: false,
       resizable: false,
+      // eslint-disable-next-line react/no-unstable-nested-components
       Cell: row => <div>{row.index + 1}</div>,
     });
 

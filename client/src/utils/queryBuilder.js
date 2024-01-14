@@ -12,11 +12,15 @@ const addColumnsToQuery = (data, query) => {
 
   const addOrder = (column) => {
     if (_.isEmpty(column.table_alias)) {
-      query.order(`${format.ident(column.table_name)}.${format.ident(column.column_name)}`,
-        column.column_order_dir);
+      query.order(
+        `${format.ident(column.table_name)}.${format.ident(column.column_name)}`,
+        column.column_order_dir,
+      );
     } else {
-      query.order(`${format.ident(column.table_alias)}.${format.ident(column.column_name)}`,
-        column.column_order_dir);
+      query.order(
+        `${format.ident(column.table_alias)}.${format.ident(column.column_name)}`,
+        column.column_order_dir,
+      );
     }
   };
 
@@ -25,8 +29,10 @@ const addColumnsToQuery = (data, query) => {
   };
 
   const addFieldWithAlias = (table, column, alias) => {
-    query.field(`${format.ident(table)}.${format.ident(column)}`,
-      `${format.ident(alias)}`);
+    query.field(
+      `${format.ident(table)}.${format.ident(column)}`,
+      `${format.ident(alias)}`,
+    );
   };
 
   const addGroupBy = (table, column) => {
@@ -199,12 +205,17 @@ const addJoinsToQuery = (data, query) => {
 
   const addJoin = (joinObj, on, joinFn) => {
     if (!_.isEmpty(joinObj.main_table.table_alias)) {
-      joinFn(`${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
-        `${format.ident(joinObj.main_table.table_alias)}`, on);
+      joinFn(
+        `${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
+        `${format.ident(joinObj.main_table.table_alias)}`,
+        on,
+      );
     } else {
-      joinFn(`${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
+      joinFn(
+        `${format.ident(joinObj.main_table.table_schema)}.${format.ident(joinObj.main_table.table_name)}`,
         null,
-        on);
+        on,
+      );
     }
   };
 
@@ -280,8 +291,10 @@ const addTablesToQuery = (data, query) => {
     if (_.isEmpty(table.table_alias)) {
       query.from(`${format.ident(table.table_schema)}.${format.ident(table.table_name)}`);
     } else {
-      query.from(`${format.ident(table.table_schema)}.${format.ident(table.table_name)}`,
-        `${format.ident(table.table_alias)}`);
+      query.from(
+        `${format.ident(table.table_schema)}.${format.ident(table.table_name)}`,
+        `${format.ident(table.table_alias)}`,
+      );
     }
   };
 
@@ -313,14 +326,223 @@ export const buildQuery = (data) => {
     query.distinct();
   }
 
-  if (data.limit && data.limitValue) {
-    query.limit(data.limitValue);
-  }
-
   addColumnsToQuery(data, query);
   addTablesToQuery(data, query);
 
   const setQueryString = buildSetQuery(data);
 
+  if (data.limit && data.limitValue) {
+    return `${`${query.toString() + setQueryString}\n` + `FETCH FIRST ${data.limitValue} ROWS ${data.withTies ? 'WITH TIES;' : 'ONLY;'}`}`;
+  }
+
   return `${query}${setQueryString};`;
+};
+
+const addFilterToQueryNew = (data) => {
+  const columns = _.cloneDeep(data.columns);
+
+  let whereQuery = '';
+  const filterList = [];
+  let filterLength;
+
+  if (columns[0]) {
+    filterLength = columns[0].column_filters.length;
+  }
+
+  columns.forEach((column) => {
+    column.column_filters.forEach((filter) => {
+      if (filter.filter.length > 0 && !column.returningOnly) {
+        filterList.push({ id: filter.id, filter: `${column.table_name}.${column.column_name} ${filter.filter}` });
+      }
+    });
+  });
+
+  const finalFilter = [];
+
+  for (let i = 0; i < filterLength + 1; i += 1) {
+    const filterRow = [];
+    filterList.forEach((filterCell) => {
+      if (filterCell.id === i) {
+        filterRow.push(filterCell.filter);
+      }
+    });
+    if (filterRow.length > 0) {
+      finalFilter.push(`(${filterRow.join(' AND ')})`);
+    }
+  }
+  whereQuery += finalFilter.join(' OR ');
+
+  if (whereQuery.length > 0) {
+    return `(${whereQuery})`;
+  }
+
+  return whereQuery;
+};
+
+const getUsingTables = (data) => {
+  const usings = _.cloneDeep(data.using);
+
+  const usingTables = [];
+
+  usings.forEach((using) => {
+    usingTables.push(`${using.main_table.table_schema}.${using.main_table.table_name}`);
+  });
+
+  return usingTables;
+};
+
+const getUsingConditions = (data) => {
+  const usings = _.cloneDeep(data.using);
+
+  const usingConditions = [];
+
+  usings.forEach((using) => {
+    using.conditions.forEach((condition) => {
+      usingConditions.push(`${condition.secondary_table.table_name}.${condition.secondary_column} = ${using.main_table.table_name}.${condition.main_column}`);
+    });
+  });
+
+  return usingConditions;
+};
+
+const addReturningToQuery = (data) => {
+  const columns = _.cloneDeep(data.columns);
+
+  let returning = '';
+  const returningColumns = [];
+
+  columns.forEach((column) => {
+    if (column.returning || column.returningOnly) {
+      returningColumns.push(`${column.table_name}.${column.column_name}`);
+    }
+  });
+
+  returning += returningColumns.join(', ');
+
+  if (data.returning) {
+    return '*';
+  }
+  return returning;
+};
+
+const addInsertValuesToQuery = (data, query) => {
+  const columns = _.cloneDeep(data.columns);
+  const valuesList = [];
+
+  for (let i = 0; i < data.rows; i += 1) {
+    const valueRow = {};
+
+    columns.forEach((column) => {
+      if (!column.returningOnly) {
+        if (column.column_values[i].value === '') {
+          valueRow[column.column_name] = 'NULL';
+        } else {
+          valueRow[column.column_name] = column.column_values[i].value;
+        }
+      }
+    });
+
+    query.setFields(valueRow, { dontQuote: true });
+    valuesList.push(query.toString().split('\n').slice(-1).toString()
+      .split('VALUES')
+      .slice(-1));
+  }
+  return valuesList;
+};
+
+const addUpdateValuesToQuery = (data, query) => {
+  const columns = _.cloneDeep(data.columns);
+
+  columns.forEach((column) => {
+    if (!column.returningOnly && column.table_id === data.tables[0].id && column.value_enabled) {
+      query.set(column.column_name, column.column_value, { dontQuote: true });
+    }
+  });
+};
+
+export const buildDeleteQuery = (data) => {
+  const query = squelPostgres.delete({
+    useAsForTableAliasNames: true,
+    fieldAliasQuoteCharacter: '',
+    tableAliasQuoteCharacter: '',
+    nameQuoteCharacter: '"',
+    separator: '\n',
+  });
+
+  query.from(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
+
+  const usingTables = getUsingTables(data, query);
+  const usingConditions = getUsingConditions(data, query);
+
+  return `${`${query.toString()
+  + (usingTables.length > 0 ? `\nUSING ${usingTables.join(', ')}\n` + 'WHERE ' + `(${usingConditions.join(' AND ')})` +
+    (addFilterToQueryNew(data).length > 0 ? ` AND ${addFilterToQueryNew(data, query)}` : '' )
+    : (addFilterToQueryNew(data, query).length > 0 ? `\nWHERE ${addFilterToQueryNew(data, query)}` : ''))
+  }\n${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
+};
+
+export const buildInsertQuery = (data) => {
+  const query = squelPostgres.insert({
+    useAsForTableAliasNames: true,
+    fieldAliasQuoteCharacter: '',
+    tableAliasQuoteCharacter: '',
+    nameQuoteCharacter: '"',
+    separator: '\n',
+  });
+
+  query.into(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
+
+  const columnString = [];
+  data.columns.forEach((column) => {
+    if (!column.returningOnly) {
+      columnString.push(column.column_name);
+    }
+  });
+
+  if (data.fromQuery) {
+    return `${`${query.toString()} ${columnString.length > 0 ? `(${columnString.join(', ')})` : ''}` + `\n${data.subquerySql.slice(0, -1)}\n${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
+  }
+  return `${`INSERT\n${query.toString().split('\n').slice(-1).join('\n')} ${columnString.length > 0 ? `(${columnString.join(', ')})\nVALUES${addInsertValuesToQuery(data, query).join(',')}\n` : ''
+  }${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
+};
+
+export const addFilterUpdate = (data, query) => {
+  const columns = _.cloneDeep(data.columns);
+
+  const filterList = [];
+
+  columns.forEach((column) => {
+    if (column.subquerySql.length > 0) {
+      filterList.push(`${column.column_filter}(${column.subquerySql.replaceAll('\n', ' ').replace(';', '')})`);
+    } else if (column.column_filter.length > 0) {
+      filterList.push(`${column.column_filter}`);
+    }
+  });
+
+  const usingConditions = getUsingConditions(data, query);
+
+  query.where(`(${usingConditions.join(' AND ')}) AND (${filterList.join(' AND ')})`);
+};
+
+export const buildUpdateQuery = (data) => {
+  const query = squelPostgres.update({
+    useAsForTableAliasNames: true,
+    fieldAliasQuoteCharacter: '',
+    tableAliasQuoteCharacter: '',
+    nameQuoteCharacter: '"',
+    separator: '\n',
+  });
+
+  query.table(`${format.ident(data.tables[0].table_schema)}.${format.ident(data.tables[0].table_name)}`);
+
+  addUpdateValuesToQuery(data, query);
+
+  const usingTables = getUsingTables(data, query);
+  const usingConditions = getUsingConditions(data);
+
+  return `${`${query.toString()
+    + (usingTables.length > 0 ? `\nFROM ${usingTables.join(', ')}\n` + 'WHERE ' + `(${usingConditions.join(' AND ')})` +
+      (addFilterToQueryNew(data).length > 0 ? ` AND ${addFilterToQueryNew(data, query)}` : '' )
+      : (addFilterToQueryNew(data, query).length > 0 ? `\nWHERE ${addFilterToQueryNew(data, query)}` : ''))
+  }\n${addReturningToQuery(data, query).length > 0 ? `RETURNING ${addReturningToQuery(data, query)}` : ''}`};`;
 };

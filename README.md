@@ -1,4 +1,4 @@
-# Postgres Visual Query v2
+# Postgres Visual Query v3
 
 Application that allows users to visually create PostgreSQL SELECT queries.
 
@@ -11,6 +11,24 @@ Application that allows users to visually create PostgreSQL SELECT queries.
 * Hide/view query menu
 * View queries as list
 * Use queries as subqueries
+
+### INSERT statement
+* Create INSERT statements
+* Add singular or multiple value rows to database
+* Use subquery to insert data
+* RETURNING clause on individual columns or all
+
+### UPDATE statement
+* Create UPDATE statements
+* RETURNING clause on individual columns or all
+* Join tables with FROM clause
+* Add filter condition to column
+
+### DELETE statement
+* Create DELETE statements
+* RETURNING clause on individual columns or all
+* Join tables with USING clause
+* Add filter condition to column
 
 ### Database
 

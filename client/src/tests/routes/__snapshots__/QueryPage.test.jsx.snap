@@ -77,7 +77,6 @@ exports[`Route: QueryPage QueryPage renders with default props 1`] = `
               className="my-2"
             >
               QueryButton
-              DeleteQueryButton
             </div>
             ResultTabs
           </div>

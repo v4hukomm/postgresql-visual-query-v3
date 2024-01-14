@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { CustomInput } from 'reactstrap';
+import Select from 'react-select';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Draggable } from 'react-beautiful-dnd';
@@ -13,6 +14,76 @@ describe('Component: Join', () => {
 
   beforeEach(() => {
     props = {
+      databaseTables:[
+        {
+          id: 1,
+          table_alias: '',
+          table_name: 'amet',
+          table_schema: 'public',
+          table_type: 'BASE TABLE',
+          columns: [
+            {
+              column_name: 'amet_kood',
+              constraints: [],
+              data_type: 'smallint',
+              ordinal_position: 1,
+              table_alias: '',
+              table_id: 1,
+              table_name: 'amet',
+              table_schema: 'public',
+            },
+            {
+              column_name: 'nimetus',
+              constraints: [],
+              data_type: 'smallint',
+              ordinal_position: 2,
+              table_alias: '',
+              table_id: 1,
+              table_name: 'amet',
+              table_schema: 'public',
+            },
+            {
+              column_name: 'kirjeldus',
+              constraints: [],
+              data_type: 'smallint',
+              ordinal_position: 3,
+              table_alias: '',
+              table_id: 1,
+              table_name: 'amet',
+              table_schema: 'public',
+            },
+          ],
+        },
+        {
+          id: 2,
+          table_alias: '',
+          table_name: 'asukoht',
+          table_schema: 'public',
+          table_type: 'BASE TABLE',
+          columns: [
+            {
+              column_name: 'asukoht_kood',
+              constraints: [],
+              data_type: 'smallint',
+              ordinal_position: 1,
+              table_alias: '',
+              table_id: 1,
+              table_name: 'asukoht',
+              table_schema: 'public',
+            },
+            {
+              column_name: 'nimetus',
+              constraints: [],
+              data_type: 'smallint',
+              ordinal_position: 2,
+              table_alias: '',
+              table_id: 1,
+              table_name: 'asukoht',
+              table_schema: 'public',
+            },
+          ],
+        },
+      ],
       tables: [
         {
           id: 1,
@@ -99,6 +170,7 @@ describe('Component: Join', () => {
       id: 'join-1',
       index: 1,
       updateJoin: jest.fn(),
+      updateJoinNewTable: jest.fn(),
       removeJoin: jest.fn(),
     };
 
@@ -145,7 +217,7 @@ describe('Component: Join', () => {
     };
 
     componentBody
-      .find(CustomInput)
+      .find(Select)
       .at(1)
       .simulate('change', {
         target,

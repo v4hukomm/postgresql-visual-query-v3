@@ -26,6 +26,7 @@ export const filterTable = (table, expr) => {
       return true;
     }
   } else if (_.endsWith(expr, ' ')) {
+    // eslint-disable-next-line no-param-reassign
     expr = _.trim(expr);
 
     if (_.isEqual(table.table_name, expr)) {

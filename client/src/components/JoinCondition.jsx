@@ -231,7 +231,7 @@ JoinCondition.propTypes = {
   language: PropTypes.shape({ code: PropTypes.string }),
   join: PropTypes.shape({
     id: PropTypes.number,
-    conditions: PropTypes.array,
+    conditions: PropTypes.shape([]),
     main_table: PropTypes.shape({
       table_name: PropTypes.string,
       id: PropTypes.number,

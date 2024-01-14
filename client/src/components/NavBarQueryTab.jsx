@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as PropTypes from 'prop-types';
 import { setActiveQuery } from '../actions/queryActions';
 import { updateQueries } from '../actions/queriesActions';
+import DeleteQueryButton from './DeleteQueryButton';
 
 export const NavBarQueryTab = (props) => {
   const handleClick = (e) => {
@@ -16,12 +17,15 @@ export const NavBarQueryTab = (props) => {
     props.updateQueries(lastActiveQuery, props.queryTabContent.id);
   };
 
+  const showDeleteBtn = () => (props.activeQueryId === props.queryTabContent.id);
+
   return (
     <div className="pr-1 pt-1 pb-1">
       <Button
         value={props.queryName}
-        className={props.active ? 'btn-sm btn-secondary' : 'btn-sm btn-light btn-outline-secondary'}
+        className={props.active ? 'btn-sm btn-secondary shadow-none' : 'btn-sm btn-light btn-outline-secondary shadow-none'}
         onClick={handleClick}
+        style={{ borderTopRightRadius: '0px', borderBottomRightRadius: '0px' }}
       >
         {props.queryTabContent.id === 0 && (
           <FontAwesomeIcon
@@ -33,6 +37,7 @@ export const NavBarQueryTab = (props) => {
         )}
         <NavLink className="p-0 d-inline">{props.queryName}</NavLink>
       </Button>
+      {showDeleteBtn() && <DeleteQueryButton />}
     </div>
   );
 };
@@ -46,6 +51,7 @@ NavBarQueryTab.propTypes = {
   setActiveQuery: PropTypes.func,
   queryName: PropTypes.string,
   active: PropTypes.bool,
+  activeQueryId: PropTypes.number,
 };
 
 const mapStateToProps = (store) => {
@@ -54,6 +60,7 @@ const mapStateToProps = (store) => {
   return ({
     activeQuery: store.query,
     queries,
+    activeQueryId: store.query.id,
   });
 };
 

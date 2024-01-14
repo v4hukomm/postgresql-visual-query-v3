@@ -8,6 +8,7 @@ import {
   setLimitValue,
   switchDistinct,
   switchLimit,
+  switchTies,
   updateColumnsOrder,
 } from '../actions/queryActions';
 import QueryColumn from './QueryColumn';
@@ -16,7 +17,8 @@ import { translations } from '../utils/translations';
 
 export const QueryColumnList = ({
   updateColumns, switchDistinctProp, columns, distinct,
-  limit, switchLimitProp, limitValue, setLimitValueProp, language, queryId,
+  limit, switchLimitProp, limitValue, setLimitValueProp,
+  language, queryId, withTies, switchWithTiesProp,
 }) => {
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
@@ -81,6 +83,14 @@ export const QueryColumnList = ({
             >
               {translations[language.code].tooltips.limitValue}
             </UncontrolledTooltip>
+            <CustomInput
+              className="ml-2 mr-2"
+              type="switch"
+              id="ties_switch"
+              label="With ties"
+              checked={withTies}
+              onChange={switchWithTiesProp}
+            />
           </InputGroup>
         )}
       </FormGroup>
@@ -98,8 +108,7 @@ export const QueryColumnList = ({
                   />
                   {showFilterOperandSelectbox(column, columns, index)
                     ? (<FilterOperandSelectbox column={column} />)
-                    : null
-                  }
+                    : null}
                 </React.Fragment>
               ))}
               {provided.placeholder}
@@ -122,6 +131,8 @@ QueryColumnList.propTypes = {
   setLimitValueProp: PropTypes.func,
   language: PropTypes.shape({ code: PropTypes.string }),
   queryId: PropTypes.number,
+  withTies: PropTypes.bool,
+  switchWithTiesProp: PropTypes.func,
 };
 
 const mapStateToProps = (store) => {
@@ -132,16 +143,17 @@ const mapStateToProps = (store) => {
     distinct: store.query.distinct,
     limit: store.query.limit,
     limitValue: store.query.limitValue.toString(),
+    withTies: store.query.withTies,
     language: store.settings.language,
     queryId: store.query.id,
   });
 };
 
-
 const mapDispatchToProps = {
   updateColumns: data => updateColumnsOrder(data),
   switchDistinctProp: () => switchDistinct(),
   switchLimitProp: () => switchLimit(),
+  switchWithTiesProp: () => switchTies(),
   setLimitValueProp: limitValue => setLimitValue(limitValue),
 };
 

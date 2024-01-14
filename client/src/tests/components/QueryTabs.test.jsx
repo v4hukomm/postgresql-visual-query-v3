@@ -9,6 +9,7 @@ describe('Component: QueryTabs', () => {
   beforeEach(() => {
     props = {
       language: { code: 'eng' },
+      queryType: "SELECT",
     };
   });
 

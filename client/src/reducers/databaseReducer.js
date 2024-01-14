@@ -16,7 +16,7 @@ export const INITIAL_STATE = {
   searchExpr: '',
 };
 
-export const databaseReducer = (state = INITIAL_STATE, action) => {
+export const databaseReducer = (state = INITIAL_STATE, action = {}) => {
   switch (action.type) {
     case ADD_TABLES: {
       const schemas = [];

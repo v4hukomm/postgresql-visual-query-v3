@@ -6,8 +6,14 @@ exports[`Component: NavBarQueryTab renders correctly 1`] = `
 >
   <button
     aria-label={null}
-    className="btn-sm btn-light btn-outline-secondary btn btn-secondary"
+    className="btn-sm btn-light btn-outline-secondary shadow-none btn btn-secondary"
     onClick={[Function]}
+    style={
+      Object {
+        "borderBottomRightRadius": "0px",
+        "borderTopRightRadius": "0px",
+      }
+    }
     type="button"
   >
     <a

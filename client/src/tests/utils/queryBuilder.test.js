@@ -681,7 +681,7 @@ describe('query builder', () => {
     const expected = 'SELECT\n'
       + 'amet.amet_kood, amet.nimetus, amet.kirjeldus\n'
       + 'FROM public.amet\n'
-      + 'LIMIT 10;';
+      + 'FETCH FIRST 10 ROWS ONLY;';
 
     expect(query).toEqual(expected);
   });

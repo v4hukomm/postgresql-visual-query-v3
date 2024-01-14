@@ -11,7 +11,7 @@ export const INITIAL_STATE = {
   connecting: false,
 };
 
-export const hostReducer = (state = INITIAL_STATE, action) => {
+export const hostReducer = (state = INITIAL_STATE, action = {}) => {
   switch (action.type) {
     case UPDATE_HOST: {
       return {

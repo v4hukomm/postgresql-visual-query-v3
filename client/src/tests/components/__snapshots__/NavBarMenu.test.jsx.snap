@@ -52,7 +52,52 @@ exports[`Component: NavBarMenu renders correctly 1`] = `
       onClick={[Function]}
       type="button"
     />
-     Add query
+     Add statement
+  </div>
+  <div
+    className="col-auto pl-0 pt-3"
+  >
+    <div
+      className="form-row"
+      inline={true}
+    >
+      <label
+        className=""
+        htmlFor="changeQueryType"
+      >
+        Statement type:
+      </label>
+      <div
+        className="col-md-1"
+      >
+        <select
+          className="form-control-sm form-control"
+          id="changeQueryType"
+          onChange={[Function]}
+        >
+          <option
+            value="SELECT"
+          >
+            SELECT
+          </option>
+          <option
+            value="DELETE"
+          >
+            DELETE
+          </option>
+          <option
+            value="INSERT"
+          >
+            INSERT
+          </option>
+          <option
+            value="UPDATE"
+          >
+            UPDATE
+          </option>
+        </select>
+      </div>
+    </div>
   </div>
 </div>
 `;

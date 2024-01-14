@@ -40,19 +40,35 @@ describe('query reducer', () => {
       column_alias: '',
       column_distinct_on: false,
       column_filter: '',
+      column_filters: [
+        {
+          filter: "",
+          id: 0,
+        },
+      ],
       column_group_by: false,
       column_name: 'column_name',
       column_order: false,
       column_order_dir: true,
+      column_value: "NULL",
+      column_values: [
+        {
+          id: 0,
+          value: "DEFAULT",
+        },
+      ],
       display_in_query: true,
       column_filter_operand: '',
       filter_as_having: false,
       subquerySql: '',
       subqueryId: 0,
       id: 1,
+      returning: false,
+      returningOnly: false,
       table_alias: 'table_alias',
       table_name: 'table_name',
       table_schema: 'table_schema',
+      value_enabled: true,
     };
 
     const state = queryReducer(INITIAL_STATE, {
@@ -80,19 +96,35 @@ describe('query reducer', () => {
       column_alias: '',
       column_distinct_on: false,
       column_filter: '',
+      column_filters: [
+        {
+          filter: "",
+          id: 0,
+        },
+      ],
       column_group_by: false,
       column_name: 'column_name',
       column_order: false,
       column_order_dir: true,
+      column_value: "NULL",
+      column_values: [
+        {
+          id: 0,
+          value: "DEFAULT",
+        },
+      ],
       display_in_query: true,
       column_filter_operand: '',
       filter_as_having: false,
       subquerySql: '',
       subqueryId: 0,
       id: 1,
+      returning: false,
+      returningOnly: false,
       table_alias: 'table_alias',
       table_name: 'table_name',
       table_schema: 'table_schema',
+      value_enabled: true,
     };
 
     const columnResult2 = {
@@ -100,19 +132,35 @@ describe('query reducer', () => {
       column_alias: 'column_name_1',
       column_distinct_on: false,
       column_filter: '',
+      column_filters: [
+        {
+          filter: "",
+          id: 0,
+        },
+      ],
       column_group_by: false,
       column_name: 'column_name',
       column_order: false,
       column_order_dir: true,
+      column_value: "NULL",
+      column_values: [
+        {
+          id: 0,
+          value: "DEFAULT",
+        },
+      ],
       display_in_query: true,
       column_filter_operand: '',
       filter_as_having: false,
       subquerySql: '',
       subqueryId: 0,
       id: 2,
+      returning: false,
+      returningOnly: false,
       table_alias: 'table_alias',
       table_name: 'table_name',
       table_schema: 'table_schema',
+      value_enabled: true,
     };
 
     let state = queryReducer(INITIAL_STATE, {
@@ -698,6 +746,510 @@ describe('query reducer', () => {
     expect(state).toEqual({
       ...INITIAL_STATE,
       distinct: false,
+    });
+  });
+
+  test('ADD_FILTER_ROW add filter row', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      columns: [{
+        column_filters: [{
+          id: 0,
+          filter: '',
+        },
+      ],
+      }]
+    };
+
+   state = queryReducer(state, {
+      type: 'ADD_FILTER_ROW',
+    });
+
+    expect(state).toEqual({
+      ...state,
+      filterRows: 2,
+      columns: [{
+        column_filters: [{
+          id: 0,
+          filter: '',
+        },
+        {
+          id: 1,
+          filter: '',
+        },
+      ],
+      }]
+    });
+  });
+
+  test('REMOVE_FILTER_ROW removes filter row', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      filterRows: 2,
+      columns: [{
+        column_filters: [{
+          id: 0,
+          filter: '',
+        },
+        {
+          id: 1,
+          filter: '',
+        },
+      ],
+      }]
+    };
+
+   state = queryReducer(state, {
+      type: 'REMOVE_FILTER_ROW',
+    });
+
+    expect(state).toEqual({
+      ...state,
+      filterRows: 1,
+      columns: [{
+        column_filters: [{
+          id: 0,
+          filter: '',
+        },
+      ],
+      }]
+    });
+  });
+
+  test('REMOVE_FILTER_ROW doesnt remove if one filter row', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      columns: [{
+        column_filters: [{
+          id: 0,
+          filter: '',
+        },
+      ],
+      }]
+    };
+
+   state = queryReducer(state, {
+      type: 'REMOVE_FILTER_ROW',
+    });
+
+    expect(state).toEqual({
+      ...state,
+      columns: [{
+        column_filters: [{
+          id: 0,
+          filter: '',
+        },
+      ],
+      }]
+    });
+  });
+
+  test('UPDATE_COLUMN_FILTER updates filter', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      columns: [{
+        id: 0,
+        column_filters: [{
+          id: 0,
+          filter: '',
+        },
+      ],
+      }]
+    };
+
+   state = queryReducer(state, {
+      type: 'UPDATE_COLUMN_FILTER',
+      payload: {
+        columnId: 0,
+        filterId: 0,
+        filter: 'new value',
+      },
+    });
+
+    expect(state).toEqual({
+      ...state,
+      columns: [{
+        id: 0,
+        column_filters: [{
+          id: 0,
+          filter: 'new value',
+        },
+      ],
+      }]
+    });
+  });
+
+  test('UPDATE_COLUMN_FILTER updates correct filter', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      columns: [{
+        id: 0,
+        column_filters: [{
+          id: 0,
+          filter: '',
+        }],
+        id: 1,
+        column_filters: [{
+          id: 0,
+          filter: '',
+        },
+        {
+          id: 1,
+          filter: '',  
+        }],
+      }],
+    };
+
+   state = queryReducer(state, {
+      type: 'UPDATE_COLUMN_FILTER',
+      payload: {
+        columnId: 1,
+        filterId: 0,
+        filter: 'new value',
+      },
+    });
+
+    expect(state).toEqual({
+      ...state,
+      columns: [{
+        id: 0,
+        column_filters: [{
+          id: 0,
+          filter: '',
+        }],
+        id: 1,
+        column_filters: [{
+          id: 0,
+          filter: 'new value',
+        },
+        {
+          id: 1,
+          filter: '',  
+        }],
+      }],
+    });
+  });
+
+  test('ADD_ROWS add row', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      columns: [{
+        column_values: [{
+          id: 0,
+          value: 'DEFAULT',
+        },
+      ],
+      }]
+    };
+
+   state = queryReducer(state, {
+      type: 'ADD_ROWS',
+    });
+
+    expect(state).toEqual({
+      ...state,
+      rows: 2,
+      columns: [{
+        column_values: [{
+          id: 0,
+          value: 'DEFAULT',
+        },
+        {
+          id: 1,
+          value: 'DEFAULT',
+        },
+      ],
+      }]
+    });
+  });
+
+  test('ADD_ROWS adds correct default value row', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      defaultValue: 'NULL',
+      columns: [{
+        column_values: [{
+          id: 0,
+          value: 'DEFAULT',
+        },
+      ],
+      }]
+    };
+
+   state = queryReducer(state, {
+      type: 'ADD_ROWS',
+    });
+
+    expect(state).toEqual({
+      ...state,
+      rows: 2,
+      columns: [{
+        column_values: [{
+          id: 0,
+          value: 'DEFAULT',
+        },
+        {
+          id: 1,
+          value: 'NULL',
+        },
+      ],
+      }]
+    });
+  });
+
+  test('REMOVE_ROWS remove row', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      rows: 2,
+      columns: [{
+        column_values: [{
+          id: 0,
+          value: 'DEFAULT',
+        },
+        {
+          id: 1,
+          value: 'DEFAULT',
+        }
+      ],
+      }]
+    };
+
+   state = queryReducer(state, {
+      type: 'REMOVE_ROWS',
+    });
+
+    expect(state).toEqual({
+      ...state,
+      rows: 1,
+      columns: [{
+        column_values: [{
+          id: 0,
+          value: 'DEFAULT',
+        },
+      ],
+      }]
+    });
+  });
+
+  test('REMOVE_ROWS doesnt remove if only one row', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      rows: 1,
+      columns: [{
+        column_values: [{
+          id: 0,
+          value: 'DEFAULT',
+        },
+      ],
+      }]
+    };
+
+   state = queryReducer(state, {
+      type: 'REMOVE_ROWS',
+    });
+
+    expect(state).toEqual({
+      ...state,
+      rows: 1,
+      columns: [{
+        column_values: [{
+          id: 0,
+          value: 'DEFAULT',
+        },
+      ],
+      }]
+    });
+  });
+
+  test('CHANGE_QUERY_TYPE changes query type', () => {
+    let state = queryReducer(INITIAL_STATE, {
+      type: 'CHANGE_QUERY_TYPE',
+      payload: 'DELETE',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      queryType: 'DELETE',
+    });
+
+    state = queryReducer(state, {
+      type: 'CHANGE_QUERY_TYPE',
+      payload: 'SELECT',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      queryType: 'SELECT',
+    });
+  });
+
+  test('CHANGE_DEFAULT_VALUE changes default value', () => {
+
+    let state = {
+      ...INITIAL_STATE,
+      defaultValue: 'DEFAULT',
+    };
+
+    state = queryReducer(state, {
+      type: 'CHANGE_DEFAULT_VALUE',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      defaultValue: 'NULL',
+    });
+
+    state = queryReducer(state, {
+      type: 'CHANGE_DEFAULT_VALUE',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      defaultValue: 'DEFAULT',
+    });
+  });
+
+  test('SWITCH_RETURNING switches returning', () => {
+    let state = queryReducer(INITIAL_STATE, {
+      type: 'SWITCH_RETURNING',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      returning: true,
+    });
+
+    state = queryReducer(state, {
+      type: 'SWITCH_RETURNING',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      returning: false,
+    });
+  });
+
+  test('SWITCH_TIES switches with ties', () => {
+    let state = queryReducer(INITIAL_STATE, {
+      type: 'SWITCH_TIES',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      withTies: true,
+    });
+
+    state = queryReducer(state, {
+      type: 'SWITCH_TIES',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      withTies: false,
+    });
+  });
+
+  test('ADD_USING add using', () => {
+    const state = queryReducer(INITIAL_STATE, {
+      type: 'ADD_USING',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      using: [{
+        id: 0,
+        main_table: {
+          table_name: '',
+          table_schema: '',
+          table_alias: '',
+        },
+        conditions: [],
+      }],
+    });
+  });
+
+test('ADD_USING add multiple using', () => {
+    let state = queryReducer(INITIAL_STATE, {
+      type: 'ADD_USING',
+    });
+
+    state = queryReducer(state, {
+      type: 'ADD_USING',
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      using: [{
+        id: 0,
+        main_table: {
+          table_name: '',
+          table_schema: '',
+          table_alias: '',
+        },
+        conditions: [],
+      }, {
+        id: 1,
+        main_table: {
+          table_name: '',
+          table_schema: '',
+          table_alias: '',
+        },
+        conditions: [],
+      }],
+    });
+  });
+
+  test('UPDATE_USING update using', () => {
+    let state = {
+      ...INITIAL_STATE,
+      using: [{
+        id: 0,
+        main_table: {
+          table_name: '',
+          table_schema: '',
+          table_alias: '',
+          id: 0,
+        }
+      }],
+    };
+
+    const updatedUsing = {
+      using: [{
+        id: 0,
+        main_table: {
+          table_name: 'table_name',
+          table_schema: 'table_schema',
+          table_alias: '',
+          id: 0,
+        },
+      }]
+    };
+
+    state = queryReducer(state, {
+      type: 'UPDATE_USING',
+      payload: updatedUsing,
+    });
+
+    expect(state).toEqual({
+      ...INITIAL_STATE,
+      using: [{
+        id: 0,
+        main_table: {
+          table_name: '',
+          table_schema: '',
+          table_alias: '',
+          id: 0,
+        },
+      }],
     });
   });
 

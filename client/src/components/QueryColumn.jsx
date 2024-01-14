@@ -92,8 +92,10 @@ export class QueryColumn extends Component {
     if (this.props.data.subqueryId) {
       let column = _.cloneDeep(this.props.data);
 
-      const subquerySql = this.props.queries
-        .find(query => query.id === this.props.data.subqueryId).sql;
+      const subquery = this.props.queries
+        .find(query => query.id === this.props.data.subqueryId);
+
+      const subquerySql = (!typeof subquery === 'undefined' ? subquery.sql : '');
 
       column = {
         ...column,
@@ -213,8 +215,8 @@ export class QueryColumn extends Component {
       : translations[this.props.language.code].queryBuilder.descL;
     const columnOrderVisibility = this.props.data.column_order ? 'visible' : 'invisible';
     const columnName = _.isEmpty(this.props.data.table_alias)
-      ? `${this.props.data.table_name}.${this.props.data.column_name}`
-      : `${this.props.data.table_alias}.${this.props.data.column_name}`;
+      ? `${this.props.data.table_schema}.${this.props.data.table_name}.${this.props.data.column_name}`
+      : `${this.props.data.table_schema}.${this.props.data.table_alias}.${this.props.data.column_name}`;
     const filterValid = this.state.filter_valid ? '' : 'is-invalid';
     const linkedQuery = this.props.queries.find(query => query.id === this.props.data.subqueryId);
     const linkedQueryName = linkedQuery
@@ -252,11 +254,6 @@ export class QueryColumn extends Component {
                               checked={this.props.data.display_in_query}
                               onChange={this.handleSwitch}
                             />
-                            <small
-                              className="mr-2 align-self-center text-muted"
-                            >
-                              {`${this.props.data.table_schema}`}
-                            </small>
                             <h6
                               className="m-0 mr-2 align-self-center"
                               id="column_name"
@@ -444,7 +441,9 @@ export class QueryColumn extends Component {
                                         onClick={this.handleSave}
                                       >
                                         {getCorrectQueryName(
-                                          this.props.language, query.queryName, query.id,
+                                          this.props.language,
+                                          query.queryName,
+                                          query.id,
                                         )}
                                       </DropdownItem>
                                     ))}

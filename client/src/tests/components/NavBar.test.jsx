@@ -53,7 +53,7 @@ describe('Component: NavBar', () => {
 
     expect(component.find('NavBarMenu').exists()).toBeTruthy();
 
-    component.find('Button').at(4).simulate('click');
+    component.find('Button').at(5).simulate('click');
 
     expect(component.find('NavBarMenu').exists()).toBeFalsy();
   });
